@@ -1,0 +1,369 @@
+import React, { useState, useEffect } from 'react';
+
+interface NavbarProps {
+  onNavigate?: (sectionId: string) => void;
+  onOpenContact?: () => void;
+}
+
+export const Navbar: React.FC<NavbarProps> = ({ onNavigate, onOpenContact }) => {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      // Smoothly morph logo when user scrolls down beyond 40px
+      if (window.scrollY > 40) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const navLinks = [
+    { label: 'Projects', href: '#works' },
+    { label: 'Experience', href: '#provenance' },
+    { label: 'Skills', href: '#skills' },
+    { label: 'Contact', href: '#contact' },
+  ];
+
+  const externalLinks = [
+    { label: 'GitHub', href: 'https://github.com/nawaz-sharif-codes' },
+    { label: 'LinkedIn', href: 'https://www.linkedin.com/in/nawazsharif/' },
+  ];
+
+  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+    setMobileMenuOpen(false);
+
+    if (href === '#contact') {
+      if (onOpenContact) {
+        onOpenContact();
+      }
+      return;
+    }
+
+    if (href.startsWith('#')) {
+      const targetId = href.substring(1);
+      if (onNavigate) {
+        onNavigate(targetId);
+      } else {
+        const element = document.getElementById(targetId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+    }
+  };
+
+  return (
+    <header
+      style={{
+        position: 'sticky',
+        top: 0,
+        zIndex: 100,
+        backgroundColor: 'var(--color-ivory-medium)',
+        borderBottom: '1px solid var(--color-stone)',
+        boxShadow: 'none',
+        transition: 'background-color var(--duration-fast) var(--ease-editorial)',
+      }}
+    >
+      <div
+        className="site-container"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          height: '76px',
+        }}
+      >
+        {/* Editorial Wordmark Logo with Smooth Scroll Morph (NAWAZ SHARIF -> NS) */}
+        <a
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          aria-label="Nawaz Sharif Home"
+          style={{
+            fontFamily: 'var(--font-anthropic-display-sans)',
+            fontSize: '20px',
+            fontWeight: 'var(--font-weight-bold)',
+            letterSpacing: '0.04em',
+            textTransform: 'uppercase',
+            color: 'var(--color-slate-dark)',
+            textDecoration: 'none',
+            display: 'inline-flex',
+            alignItems: 'center',
+            cursor: 'pointer',
+            userSelect: 'none',
+          }}
+        >
+          <span>N</span>
+          <span
+            style={{
+              display: 'inline-block',
+              maxWidth: isScrolled ? '0px' : '95px',
+              opacity: isScrolled ? 0 : 1,
+              overflow: 'hidden',
+              whiteSpace: 'pre',
+              transition: 'max-width 0.38s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1)',
+              verticalAlign: 'bottom',
+            }}
+          >
+            AWAZ{' '}
+          </span>
+          <span>S</span>
+          <span
+            style={{
+              display: 'inline-block',
+              maxWidth: isScrolled ? '0px' : '85px',
+              opacity: isScrolled ? 0 : 1,
+              overflow: 'hidden',
+              whiteSpace: 'pre',
+              transition: 'max-width 0.38s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1)',
+              verticalAlign: 'bottom',
+            }}
+          >
+            HARIF
+          </span>
+        </a>
+
+        {/* Desktop Navigation & External Utility Links */}
+        <div
+          style={{
+            display: 'none',
+            alignItems: 'center',
+            gap: 'var(--spacing-32)',
+          }}
+          className="desktop-nav"
+        >
+          {/* Main Section Links */}
+          <nav
+            aria-label="Main Navigation"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 'var(--spacing-32)',
+            }}
+          >
+            {navLinks.map((link) => (
+              <NavLinkItem
+                key={link.label}
+                label={link.label}
+                href={link.href}
+                onClick={(e) => handleLinkClick(e, link.href)}
+              />
+            ))}
+          </nav>
+
+          {/* Hairline Divider between internal and external links */}
+          <span
+            style={{
+              width: '1px',
+              height: '16px',
+              backgroundColor: 'var(--color-stone)',
+              display: 'inline-block',
+            }}
+          />
+
+          {/* External Code & Professional Channels */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 'var(--spacing-24)',
+            }}
+          >
+            {externalLinks.map((link) => (
+              <ExternalNavItem
+                key={link.label}
+                label={link.label}
+                href={link.href}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Mobile Menu Button */}
+        <button
+          className="mobile-menu-btn"
+          aria-label="Toggle navigation menu"
+          aria-expanded={mobileMenuOpen}
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            gap: '5px',
+            width: '32px',
+            height: '32px',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: 0,
+          }}
+        >
+          <span
+            style={{
+              width: '20px',
+              height: '1.5px',
+              backgroundColor: 'var(--color-slate-dark)',
+              transition: 'transform var(--duration-fast) var(--ease-editorial)',
+              transform: mobileMenuOpen ? 'rotate(45deg) translate(4px, 5px)' : 'none',
+            }}
+          />
+          <span
+            style={{
+              width: '20px',
+              height: '1.5px',
+              backgroundColor: 'var(--color-slate-dark)',
+              opacity: mobileMenuOpen ? 0 : 1,
+              transition: 'opacity var(--duration-fast) var(--ease-editorial)',
+            }}
+          />
+          <span
+            style={{
+              width: '20px',
+              height: '1.5px',
+              backgroundColor: 'var(--color-slate-dark)',
+              transition: 'transform var(--duration-fast) var(--ease-editorial)',
+              transform: mobileMenuOpen ? 'rotate(-45deg) translate(4px, -5px)' : 'none',
+            }}
+          />
+        </button>
+      </div>
+
+      {/* Mobile Menu Dropdown */}
+      {mobileMenuOpen && (
+        <div
+          style={{
+            backgroundColor: 'var(--color-ivory-medium)',
+            borderBottom: '1px solid var(--color-stone)',
+            padding: 'var(--spacing-16) var(--spacing-24)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 'var(--spacing-16)',
+          }}
+        >
+          {navLinks.map((link) => (
+            <a
+              key={link.label}
+              href={link.href}
+              onClick={(e) => handleLinkClick(e, link.href)}
+              style={{
+                fontFamily: 'var(--font-anthropic-sans)',
+                fontSize: 'var(--text-body-sm)',
+                fontWeight: 'var(--font-weight-medium)',
+                color: 'var(--color-slate-dark)',
+                textDecoration: 'none',
+                padding: 'var(--spacing-8) 0',
+                borderBottom: '1px solid var(--color-stone)',
+              }}
+            >
+              {link.label}
+            </a>
+          ))}
+          <div style={{ display: 'flex', gap: 'var(--spacing-16)', paddingTop: 'var(--spacing-8)' }}>
+            {externalLinks.map((link) => (
+              <a
+                key={link.label}
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  fontFamily: 'var(--font-anthropic-sans)',
+                  fontSize: 'var(--text-caption)',
+                  fontWeight: 'var(--font-weight-medium)',
+                  color: 'var(--color-slate-medium)',
+                  textDecoration: 'none',
+                }}
+              >
+                {link.label} ↗
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <style>{`
+        @media (min-width: 768px) {
+          .desktop-nav {
+            display: flex !important;
+          }
+          .mobile-menu-btn {
+            display: none !important;
+          }
+        }
+      `}</style>
+    </header>
+  );
+};
+
+interface NavLinkItemProps {
+  label: string;
+  href: string;
+  onClick: (e: React.MouseEvent<HTMLAnchorElement>) => void;
+}
+
+const NavLinkItem: React.FC<NavLinkItemProps> = ({ label, href, onClick }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <a
+      href={href}
+      onClick={onClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      style={{
+        fontFamily: 'var(--font-anthropic-sans)',
+        fontSize: '15px',
+        fontWeight: 'var(--font-weight-medium)',
+        letterSpacing: '-0.005em',
+        color: isHovered ? 'var(--color-slate-dark)' : 'var(--color-slate-medium)',
+        textDecoration: 'none',
+        transition: 'color var(--duration-fast) var(--ease-editorial)',
+        padding: 'var(--spacing-4) 0',
+      }}
+    >
+      {label}
+    </a>
+  );
+};
+
+interface ExternalNavItemProps {
+  label: string;
+  href: string;
+}
+
+const ExternalNavItem: React.FC<ExternalNavItemProps> = ({ label, href }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      style={{
+        fontFamily: 'var(--font-anthropic-sans)',
+        fontSize: '14px',
+        fontWeight: 'var(--font-weight-regular)',
+        letterSpacing: '-0.005em',
+        color: isHovered ? 'var(--color-slate-dark)' : 'var(--color-cloud-dark)',
+        textDecoration: 'none',
+        transition: 'color var(--duration-fast) var(--ease-editorial)',
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '4px',
+      }}
+    >
+      {label} <span style={{ fontSize: '11px' }}>↗</span>
+    </a>
+  );
+};

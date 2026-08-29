@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <!-- Background Canvas -->
+  <rect width="1200" height="630" fill="#f0eee6" />
+  
+  <!-- Outer Hairline Border -->
+  <rect x="32" y="32" width="1136" height="566" rx="24" fill="#faf9f5" stroke="#cccbc8" stroke-width="1.5" />
+  
+  <!-- Monogram & Header -->
+  <rect x="72" y="72" width="44" height="44" rx="6" fill="#141413" />
+  <text x="94" y="101" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="20" font-weight="700" fill="#f0eee6" text-anchor="middle">NS</text>
+  
+  <text x="132" y="100" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="18" font-weight="700" letter-spacing="2" fill="#141413">NAWAZ SHARIF</text>
+  <text x="1128" y="100" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="16" font-weight="600" letter-spacing="1" fill="#87867f" text-anchor="end">BACKEND &amp; SYSTEMS ENGINEER</text>
+
+  <!-- Accent Line in Clay -->
+  <rect x="72" y="148" width="80" height="4" rx="2" fill="#d97757" />
+
+  <!-- Main Headline in Serif -->
+  <text x="72" y="240" font-family="Georgia, 'Times New Roman', serif" font-size="54" font-weight="600" fill="#141413" letter-spacing="-1">
+    I build backend systems
+  </text>
+  <text x="72" y="310" font-family="Georgia, 'Times New Roman', serif" font-size="54" font-weight="600" fill="#141413" letter-spacing="-1">
+    that don't fall over at <tspan text-decoration="underline" fill="#141413">scale</tspan>.
+  </text>
+
+  <!-- Narrative Summary in Serif -->
+  <text x="72" y="410" font-family="Georgia, 'Times New Roman', serif" font-size="24" fill="#3d3d3a" line-height="1.5">
+    Distributed systems, identity architecture &amp; event-driven pipelines at DAZN.
+  </text>
+
+  <!-- Footer Metadata & Badges -->
+  <line x1="72" y1="480" x2="1128" y2="480" stroke="#cccbc8" stroke-width="1" />
+  
+  <rect x="72" y="516" width="12" height="12" rx="6" fill="#d97757" />
+  <text x="96" y="527" font-family="SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace" font-size="16" fill="#141413">
+    Foxtel → DAZN Identity Migration • 1.4M Users
+  </text>
+
+  <text x="1128" y="527" font-family="SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace" font-size="16" fill="#87867f" text-anchor="end">
+    nawazsharif.works
+  </text>
+</svg>
