@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Routes, Route, useNavigate, useLocation, useParams } from 'react-router-dom';
 import { SkipLink } from './components/ui/SkipLink';
 import { Navbar } from './components/layout/Navbar';
@@ -7,46 +7,73 @@ import { FeaturedHeroCard } from './components/sections/FeaturedHeroCard';
 import { WorksGrid } from './components/sections/WorksGrid';
 import { ProvenanceSection } from './components/sections/ProvenanceSection';
 import { Footer } from './components/layout/Footer';
+import { ContactModal } from './components/ui/ContactModal';
 import { CaseStudyDetail } from './pages/CaseStudyDetail';
-import { ContactPage } from './pages/ContactPage';
 import { CASE_STUDIES } from './data/projects';
+import { updatePageSEO } from './utils/seo';
 
-// Scroll restoration and hash anchor handling across route changes
-const ScrollManager: React.FC = () => {
-  const { pathname, hash } = useLocation();
+// Route section scroll coordinator matching editorial smooth motion
+const SectionScrollSync: React.FC = () => {
+  const { pathname } = useLocation();
 
   useEffect(() => {
-    if (hash) {
-      const targetId = hash.replace('#', '');
-      const element = document.getElementById(targetId);
-      if (element) {
+    if (pathname === '/projects') {
+      updatePageSEO({
+        title: 'Projects',
+        description: 'Selected production systems and distributed architectures engineered by Nawaz Sharif.',
+        path: '/projects',
+      });
+      const el = document.getElementById('works');
+      if (el) setTimeout(() => el.scrollIntoView({ behavior: 'smooth' }), 50);
+    } else if (pathname === '/experience') {
+      updatePageSEO({
+        title: 'Experience',
+        description: 'Engineering career provenance and track record at DAZN and ENTAIN.',
+        path: '/experience',
+      });
+      const el = document.getElementById('provenance');
+      if (el) setTimeout(() => el.scrollIntoView({ behavior: 'smooth' }), 50);
+    } else if (pathname === '/skills') {
+      updatePageSEO({
+        title: 'Skills',
+        description: 'Technical provenance, backend engineering stack, distributed databases, cloud systems, and observability tooling.',
+        path: '/skills',
+      });
+      const el = document.getElementById('skills');
+      if (el) setTimeout(() => el.scrollIntoView({ behavior: 'smooth' }), 50);
+    } else if (pathname === '/contact') {
+      updatePageSEO({
+        title: 'Contact',
+        description: 'Get in touch with Nawaz Sharif for backend architecture, high-throughput systems, or engineering inquiries.',
+        path: '/contact',
+      });
+    } else if (pathname === '/') {
+      updatePageSEO({
+        title: 'Backend & Systems Engineer',
+        description: 'Backend and systems engineer working across identity infrastructure, event-driven billing pipelines, and distributed systems at DAZN.',
+        path: '/',
+      });
+      if (window.scrollY > 0) {
         setTimeout(() => {
-          element.scrollIntoView({ behavior: 'smooth' });
-        }, 80);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 50);
       }
-    } else {
-      window.scrollTo({ top: 0, behavior: 'instant' });
     }
-  }, [pathname, hash]);
+  }, [pathname]);
 
   return null;
 };
 
-// Home View
-const HomePage: React.FC = () => {
+// Main Home Page Component rendering all core sections
+const HomePageView: React.FC = () => {
   const navigate = useNavigate();
-
-  useEffect(() => {
-    document.title = 'Nawaz Sharif — Backend & Systems Engineer';
-  }, []);
 
   return (
     <>
       <HeroSection
         onScaleClick={(e) => {
           e.preventDefault();
-          const el = document.getElementById('provenance');
-          if (el) el.scrollIntoView({ behavior: 'smooth' });
+          navigate('/experience');
         }}
       />
       <FeaturedHeroCard
@@ -60,8 +87,8 @@ const HomePage: React.FC = () => {
   );
 };
 
-// Case Study View with dynamic route params and SEO title updates
-const CaseStudyPage: React.FC = () => {
+// Case Study View Component
+const CaseStudyPageView: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const currentSlug = slug || 'identity-migration';
@@ -69,11 +96,20 @@ const CaseStudyPage: React.FC = () => {
 
   useEffect(() => {
     if (project) {
-      document.title = `${project.title} — Nawaz Sharif`;
+      updatePageSEO({
+        title: project.title,
+        description: `${project.subtitle} ${project.context}`,
+        path: `/work/${project.slug}`,
+      });
     } else {
-      document.title = 'Case Study — Nawaz Sharif';
+      updatePageSEO({
+        title: 'Case Study',
+        description: 'Production system case study by Nawaz Sharif.',
+        path: `/work/${currentSlug}`,
+      });
     }
-  }, [project]);
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [project, currentSlug]);
 
   return (
     <CaseStudyDetail
@@ -84,35 +120,53 @@ const CaseStudyPage: React.FC = () => {
   );
 };
 
-// Dedicated Contact Page View
-const ContactPageView: React.FC = () => {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    document.title = 'Contact — Nawaz Sharif';
-  }, []);
-
-  return <ContactPage onBackToIndex={() => navigate('/')} />;
-};
-
 export const App: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [isContactOpen, setIsContactOpen] = useState<boolean>(false);
 
-  const handleNavbarNavigate = (sectionId: string) => {
-    if (window.location.pathname !== '/') {
-      navigate(`/#${sectionId}`);
+  // Sync contact modal open state with /contact route
+  useEffect(() => {
+    if (location.pathname === '/contact') {
+      setIsContactOpen(true);
     } else {
-      const element = document.getElementById(sectionId);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-        window.history.pushState(null, '', `/#${sectionId}`);
-      }
+      setIsContactOpen(false);
+    }
+  }, [location.pathname]);
+
+  const handleNavbarNavigate = (path: string) => {
+    if (path === '/') {
+      navigate('/');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (path === '/projects') {
+      navigate('/projects');
+      const el = document.getElementById('works');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    } else if (path === '/experience') {
+      navigate('/experience');
+      const el = document.getElementById('provenance');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    } else if (path === '/skills') {
+      navigate('/skills');
+      const el = document.getElementById('skills');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    } else if (path === '/contact') {
+      navigate('/contact');
+    } else {
+      navigate(path);
+    }
+  };
+
+  const handleCloseContactModal = () => {
+    setIsContactOpen(false);
+    if (location.pathname === '/contact') {
+      navigate('/');
     }
   };
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <ScrollManager />
+      <SectionScrollSync />
       <SkipLink targetId="main-content" />
       <Navbar
         onNavigate={handleNavbarNavigate}
@@ -121,16 +175,25 @@ export const App: React.FC = () => {
 
       <main id="main-content" tabIndex={-1} style={{ flex: 1, outline: 'none' }}>
         <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/work/:slug" element={<CaseStudyPage />} />
-          <Route path="/contact" element={<ContactPageView />} />
+          <Route path="/" element={<HomePageView />} />
+          <Route path="/projects" element={<HomePageView />} />
+          <Route path="/experience" element={<HomePageView />} />
+          <Route path="/skills" element={<HomePageView />} />
+          <Route path="/contact" element={<HomePageView />} />
+          <Route path="/work/:slug" element={<CaseStudyPageView />} />
           {/* Catch-all fallback */}
-          <Route path="*" element={<HomePage />} />
+          <Route path="*" element={<HomePageView />} />
         </Routes>
       </main>
 
       {/* Minimal Slate Dark Footer */}
       <Footer />
+
+      {/* Contact Form Modal (Popup design as requested) */}
+      <ContactModal
+        isOpen={isContactOpen}
+        onClose={handleCloseContactModal}
+      />
     </div>
   );
 };
