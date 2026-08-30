@@ -61,7 +61,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               >
                 backend
               </span>{' '}
-              systems that don't fall over at any{' '}
+              systems that don't fall over at{' '}
               <a
                 href="#provenance"
                 onClick={handleScaleClick}

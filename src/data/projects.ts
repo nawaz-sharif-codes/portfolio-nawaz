@@ -52,7 +52,7 @@ export const CASE_STUDIES: Record<string, CaseStudy> = {
   },
   'retention-offers': {
     slug: 'retention-offers',
-    title: 'Retention Offer Engine',
+    title: 'Retention Offers Engine',
     subtitle: 'Matching at-risk B2B customers to the right offer, automatically.',
     context:
       'When B2B customers soft-cancel their subscription, the business wants to present the right retention offer automatically, rather than relying on manual review of every cancellation.',
