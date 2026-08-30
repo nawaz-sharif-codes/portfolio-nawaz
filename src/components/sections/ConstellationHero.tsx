@@ -124,7 +124,7 @@ export const ConstellationHero: React.FC<ConstellationHeroProps> = ({
   return (
     <section
       id="work"
-      aria-label="Flagship Engineering Project — Foxtel to DAZN Identity Migration"
+      aria-label="Flagship Engineering Project: Foxtel to DAZN"
       style={{
         paddingTop: 'clamp(40px, 6vw, 64px)',
         paddingBottom: 'clamp(48px, 8vw, 80px)',
@@ -423,7 +423,7 @@ export const ConstellationHero: React.FC<ConstellationHeroProps> = ({
                 lineHeight: 1.4,
               }}
             >
-              "Re-architecting identity for 1.4 million users, live."
+              "Scaling and securing identity for 1.4M users on the fly."
             </p>
 
             {/* Narrative Body Description */}
@@ -440,23 +440,15 @@ export const ConstellationHero: React.FC<ConstellationHeroProps> = ({
               Leading a zero-downtime migration of Foxtel's ~1.4M-user identity platform ForgeRock onto DAZN's IAM systems. Built on resumable, checkpointed data extraction and live event-driven directory sync to keep both platforms consistent throughout the transition.
             </p>
 
-            {/* Primary Action Button with Signature Bottom-Only Radius */}
+            {/* Primary Action Button with Attachment Styling */}
             <div style={{ paddingTop: 'var(--spacing-8)' }}>
               <Button
-                variant="clay-filled"
+                variant="light-pill"
                 asAnchor
                 href="/work/identity-migration"
                 onClick={handleCaseStudyClick}
-                style={{
-                  padding: '13px 34px',
-                  fontSize: 'var(--text-body-sm)',
-                  fontWeight: 'var(--font-weight-medium)',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 'var(--spacing-8)',
-                }}
               >
-                Explore Architecture Case Study →
+                View Case Study →
               </Button>
             </div>
           </div>

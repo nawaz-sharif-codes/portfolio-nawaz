@@ -12,13 +12,13 @@
   --color-clay: #d97757;
   --color-clay-deep: #c6613f;
 
-  /* Typography — Font Families */
+  /* Typography: Font Families */
   --font-anthropic-serif: 'Source Serif 4', 'Anthropic Serif', ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
   --font-anthropic-sans: 'Anthropic Sans', 'Inter', Arial, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-anthropic-display-sans: 'Space Grotesk', 'Anthropic Sans', 'Inter', Arial, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-anthropic-mono: 'JetBrains Mono', 'Anthropic Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
-  /* Typography — Scale */
+  /* Typography: Scale */
   --text-caption: 12px;
   --leading-caption: 1.4;
   --tracking-caption: -0.24px;
@@ -36,7 +36,7 @@
   --text-display: 68px;
   --leading-display: 1.1;
 
-  /* Typography — Weights */
+  /* Typography: Weights */
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;

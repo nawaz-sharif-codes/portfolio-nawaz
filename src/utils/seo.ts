@@ -7,7 +7,7 @@ interface SEOProps {
 const DOMAIN = 'https://portfolio-nawaz-six.vercel.app';
 
 export const updatePageSEO = ({ title, description, path }: SEOProps) => {
-  const fullTitle = `${title} — Nawaz Sharif`;
+  const fullTitle = `${title} | Nawaz Sharif`;
   const canonicalUrl = `${DOMAIN}${path}`;
 
   // Update title

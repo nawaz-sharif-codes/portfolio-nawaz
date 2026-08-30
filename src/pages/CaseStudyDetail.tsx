@@ -165,7 +165,7 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({
                     color: 'var(--color-cloud-dark)',
                   }}
                 >
-                  —
+                  •
                 </span>
                 <span
                   style={{
