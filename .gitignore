@@ -29,6 +29,7 @@ dist-ssr
 
 # Test & Screenshot Artifacts
 *.png
+!public/*.png
 lighthouse-*.json
 
 # Environment

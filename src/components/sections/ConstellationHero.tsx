@@ -52,50 +52,96 @@ export const ConstellationHero: React.FC<ConstellationHeroProps> = ({
   onViewCaseStudy,
 }) => {
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
+  const [isCardHovered, setIsCardHovered] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
   const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 });
   const [animTime, setAnimTime] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const animFrameRef = useRef<number | null>(null);
 
-  // System Hubs positioned around the perimeter of the central content
+  // System Hubs positioned around the perimeter of the central content with comfortable inner padding
   const hubs: HubItem[] = [
-    { id: 'legacy', title: 'Legacy IAM Platform', x: 14, y: 32, icon: ShieldAlert },
-    { id: 'oauth', title: 'OAuth2 / OIDC Engine', x: 86, y: 32, icon: Key },
-    { id: 'pipeline', title: 'Zero-Downtime Pipeline', x: 14, y: 78, icon: Layers },
-    { id: 'event', title: 'Event-Driven Sync', x: 86, y: 78, icon: Radio },
+    { id: 'legacy', title: 'Legacy IAM Platform', x: 18, y: 32, icon: ShieldAlert },
+    { id: 'oauth', title: 'OAuth2 / OIDC Engine', x: 82, y: 32, icon: Key },
+    { id: 'pipeline', title: 'Zero-Downtime Pipeline', x: 18, y: 78, icon: Layers },
+    { id: 'event', title: 'Event-Driven Sync', x: 82, y: 78, icon: Radio },
     { id: 'edge', title: 'Distributed Auth Edge', x: 50, y: 14, icon: Globe },
   ];
 
-  // Satellite Nodes connected to Hubs
+  // Satellite Nodes connected to Hubs (calibrated coordinates with generous edge margins)
   const nodes: NodeItem[] = [
     // Legacy IAM Satellites (Foxtel)
-    { id: 'forgerock', label: 'ForgeRock AM', sublabel: 'Auth Realm', x: 5, y: 18, hubId: 'legacy', type: 'satellite', tag: 'Legacy', icon: Lock },
-    { id: 'directory', label: 'Sun Directory Server', sublabel: 'LDAP Schema', x: 22, y: 18, hubId: 'legacy', type: 'satellite', tag: 'Directory', icon: Database },
-    { id: 'openidm', label: 'OpenIDM', sublabel: 'Identity Store', x: 4, y: 48, hubId: 'legacy', type: 'satellite', tag: 'IAM', icon: UserCheck },
-    { id: 'saml', label: 'Legacy SAML 2.0', sublabel: 'B2B Federation', x: 18, y: 48, hubId: 'legacy', type: 'satellite', tag: 'Protocol', icon: FileCode },
+    { id: 'forgerock', label: 'ForgeRock AM', sublabel: 'Auth Realm', x: 10, y: 18, hubId: 'legacy', type: 'satellite', tag: 'Legacy', icon: Lock },
+    { id: 'directory', label: 'Sun Directory Server', sublabel: 'LDAP Schema', x: 25, y: 18, hubId: 'legacy', type: 'satellite', tag: 'Directory', icon: Database },
+    { id: 'openidm', label: 'OpenIDM', sublabel: 'Identity Store', x: 9, y: 48, hubId: 'legacy', type: 'satellite', tag: 'IAM', icon: UserCheck },
+    { id: 'saml', label: 'Legacy SAML 2.0', sublabel: 'B2B Federation', x: 23, y: 48, hubId: 'legacy', type: 'satellite', tag: 'Protocol', icon: FileCode },
 
     // OAuth2 / OIDC Satellites (DAZN Core)
-    { id: 'pkce', label: 'PKCE Authorization', sublabel: 'RFC 7636', x: 80, y: 18, hubId: 'oauth', type: 'satellite', tag: 'Security', icon: ShieldCheck },
-    { id: 'jwt', label: 'JWT Token Issuer', sublabel: 'RS256 Signer', x: 96, y: 18, hubId: 'oauth', type: 'satellite', tag: 'Tokens', icon: KeyRound },
-    { id: 'jwks', label: 'JWKS Key Rotation', sublabel: 'Zero Cache Miss', x: 82, y: 48, hubId: 'oauth', type: 'satellite', tag: 'Keys', icon: RefreshCw },
-    { id: 'refresh', label: 'Refresh Rotation', sublabel: 'Sliding Session', x: 96, y: 48, hubId: 'oauth', type: 'satellite', tag: 'Session', icon: RotateCcw },
+    { id: 'pkce', label: 'PKCE Authorization', sublabel: 'RFC 7636', x: 75, y: 18, hubId: 'oauth', type: 'satellite', tag: 'Security', icon: ShieldCheck },
+    { id: 'jwt', label: 'JWT Token Issuer', sublabel: 'RS256 Signer', x: 90, y: 18, hubId: 'oauth', type: 'satellite', tag: 'Tokens', icon: KeyRound },
+    { id: 'jwks', label: 'JWKS Key Rotation', sublabel: 'Zero Cache Miss', x: 76, y: 48, hubId: 'oauth', type: 'satellite', tag: 'Keys', icon: RefreshCw },
+    { id: 'refresh', label: 'Refresh Rotation', sublabel: 'Sliding Session', x: 91, y: 48, hubId: 'oauth', type: 'satellite', tag: 'Session', icon: RotateCcw },
 
     // Zero-Downtime Pipeline Satellites
-    { id: 'extractor', label: 'Resumable Extractor', sublabel: '10k Batch/s', x: 4, y: 66, hubId: 'pipeline', type: 'satellite', tag: 'ETL', icon: Cpu },
-    { id: 'checkpoint', label: 'Checkpoint State', sublabel: 'WAL Storage', x: 18, y: 66, hubId: 'pipeline', type: 'satellite', tag: 'State', icon: BookmarkCheck },
-    { id: 'records', label: '1.4M User Records', sublabel: 'Zero Data Loss', x: 6, y: 92, hubId: 'pipeline', type: 'satellite', tag: 'Scale', icon: Users },
-    { id: 'idempotent', label: 'Idempotent Ingestion', sublabel: 'Hash Deduplication', x: 22, y: 92, hubId: 'pipeline', type: 'satellite', tag: 'Sync', icon: CheckCheck },
+    { id: 'extractor', label: 'Resumable Extractor', sublabel: '10k Batch/s', x: 10, y: 66, hubId: 'pipeline', type: 'satellite', tag: 'ETL', icon: Cpu },
+    { id: 'checkpoint', label: 'Checkpoint State', sublabel: 'WAL Storage', x: 24, y: 66, hubId: 'pipeline', type: 'satellite', tag: 'State', icon: BookmarkCheck },
+    { id: 'records', label: '1.4M User Records', sublabel: 'Zero Data Loss', x: 11, y: 92, hubId: 'pipeline', type: 'satellite', tag: 'Scale', icon: Users },
+    { id: 'idempotent', label: 'Idempotent Ingestion', sublabel: 'Hash Deduplication', x: 25, y: 92, hubId: 'pipeline', type: 'satellite', tag: 'Sync', icon: CheckCheck },
 
     // Event-Driven Sync Satellites
-    { id: 'kafka', label: 'Kafka Event Stream', sublabel: 'Partitioned Bus', x: 82, y: 66, hubId: 'event', type: 'satellite', tag: 'Events', icon: Radio },
-    { id: 'dualwrite', label: 'Dual-Write Webhooks', sublabel: 'Async Dispatch', x: 96, y: 66, hubId: 'event', type: 'satellite', tag: 'Hooks', icon: Webhook },
-    { id: 'cdc', label: 'CDC Replication', sublabel: 'Delta Stream', x: 78, y: 92, hubId: 'event', type: 'satellite', tag: 'Replication', icon: RefreshCw },
-    { id: 'cutover', label: '0 Downtime Cutover', sublabel: 'Live Switch', x: 94, y: 92, hubId: 'event', type: 'satellite', tag: 'Migration', icon: Zap },
+    { id: 'kafka', label: 'Kafka Event Stream', sublabel: 'Partitioned Bus', x: 76, y: 66, hubId: 'event', type: 'satellite', tag: 'Events', icon: Radio },
+    { id: 'dualwrite', label: 'Dual-Write Webhooks', sublabel: 'Async Dispatch', x: 90, y: 66, hubId: 'event', type: 'satellite', tag: 'Hooks', icon: Webhook },
+    { id: 'cdc', label: 'CDC Replication', sublabel: 'Delta Stream', x: 75, y: 92, hubId: 'event', type: 'satellite', tag: 'Replication', icon: RefreshCw },
+    { id: 'cutover', label: '0 Downtime Cutover', sublabel: 'Live Switch', x: 89, y: 92, hubId: 'event', type: 'satellite', tag: 'Migration', icon: Zap },
 
     // Distributed Auth Edge Satellites
-    { id: 'gateway', label: 'AWS API Gateway', sublabel: 'Route PDP', x: 30, y: 12, hubId: 'edge', type: 'satellite', tag: 'Gateway', icon: Network },
-    { id: 'multiregion', label: 'Multi-Region Cache', sublabel: 'Sub-15ms Auth', x: 70, y: 12, hubId: 'edge', type: 'satellite', tag: 'Latency', icon: Globe },
+    { id: 'gateway', label: 'AWS API Gateway', sublabel: 'Route PDP', x: 32, y: 12, hubId: 'edge', type: 'satellite', tag: 'Gateway', icon: Network },
+    { id: 'multiregion', label: 'Multi-Region Cache', sublabel: 'Sub-15ms Auth', x: 68, y: 12, hubId: 'edge', type: 'satellite', tag: 'Latency', icon: Globe },
   ];
+
+  // Scroll reveal trigger
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      { threshold: 0.05 }
+    );
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+    return () => observer.disconnect();
+  }, []);
+
+  // Smooth scroll-driven card expansion from 75% to 100%
+  useEffect(() => {
+    const isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (isReducedMotion) {
+      setScrollProgress(1);
+      return;
+    }
+
+    let ticking = false;
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrollY = window.scrollY || window.pageYOffset || 0;
+          // Progress goes from 0 (at top) to 1 (when scrolled 300px)
+          const progress = Math.min(Math.max(scrollY / 300, 0), 1);
+          setScrollProgress(progress);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Continuous subtle trigonometric float physics
   useEffect(() => {
@@ -146,6 +192,19 @@ export const ConstellationHero: React.FC<ConstellationHeroProps> = ({
     }
   };
 
+  // Compute smooth scale and translation
+  const baseScaleX = 0.75 + scrollProgress * 0.25;
+  const baseScaleY = 0.90 + scrollProgress * 0.10;
+  const computedScaleX = isCardHovered && scrollProgress > 0.7
+    ? (baseScaleX * 1.018).toFixed(4)
+    : baseScaleX.toFixed(4);
+  const computedScaleY = isCardHovered && scrollProgress > 0.7
+    ? (baseScaleY * 1.012).toFixed(4)
+    : baseScaleY.toFixed(4);
+  const computedTranslateY = isCardHovered && scrollProgress > 0.7
+    ? -10
+    : Math.round((1 - scrollProgress) * 16);
+
   return (
     <section
       id="work"
@@ -155,12 +214,25 @@ export const ConstellationHero: React.FC<ConstellationHeroProps> = ({
         paddingBottom: 'clamp(48px, 8vw, 80px)',
       }}
     >
-      <div className="site-container">
-        {/* Dark Themed Hero Stage inspired by Anthropic ktve-stage */}
+      <div
+        style={{
+          width: '100%',
+          maxWidth: '1440px',
+          margin: '0 auto',
+          paddingLeft: 'clamp(16px, 2.5vw, 32px)',
+          paddingRight: 'clamp(16px, 2.5vw, 32px)',
+        }}
+        className="constellation-hero-wrapper"
+      >
+        {/* Dark Themed Hero Stage inspired by Anthropic ktve-stage with smooth scroll-driven X-scaling growth */}
         <div
           ref={containerRef}
           onMouseMove={handleMouseMove}
-          onMouseLeave={handleMouseLeave}
+          onMouseEnter={() => setIsCardHovered(true)}
+          onMouseLeave={() => {
+            setIsCardHovered(false);
+            handleMouseLeave();
+          }}
           style={{
             position: 'relative',
             backgroundColor: '#000000',
@@ -170,18 +242,53 @@ export const ConstellationHero: React.FC<ConstellationHeroProps> = ({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: '0 24px 48px rgba(0, 0, 0, 0.35)',
-            padding: 'clamp(40px, 6vw, 72px) clamp(20px, 4vw, 40px)',
+            padding: 'clamp(40px, 6vw, 72px) clamp(24px, 4vw, 48px)',
+            transformOrigin: 'center top',
+            transform: isVisible
+              ? `scaleX(${computedScaleX}) scaleY(${computedScaleY}) translateY(${computedTranslateY}px)`
+              : 'scaleX(0.75) scaleY(0.90) translateY(32px)',
+            opacity: isVisible ? 1 : 0,
+            transition: isCardHovered
+              ? 'transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease'
+              : 'transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease',
+            border: isCardHovered
+              ? '1px solid rgba(217, 119, 87, 0.45)'
+              : '1px solid rgba(255, 255, 255, 0.08)',
+            boxShadow: isCardHovered
+              ? '0 36px 72px -16px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(217, 119, 87, 0.25), 0 0 35px rgba(217, 119, 87, 0.1)'
+              : '0 24px 48px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.06)',
+            willChange: 'transform',
           }}
           className="constellation-container"
         >
+          {/* Top Illuminated Accent Line on Card Hover */}
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              height: '2px',
+              background: 'linear-gradient(90deg, transparent 0%, rgba(217, 119, 87, 0.9) 50%, transparent 100%)',
+              opacity: isCardHovered ? 1 : 0,
+              transform: isCardHovered ? 'scaleX(1)' : 'scaleX(0.4)',
+              transformOrigin: 'center',
+              transition: 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease',
+              zIndex: 10,
+              pointerEvents: 'none',
+            }}
+          />
+
           {/* Subtle Background Radial Ambient Glow */}
           <div
             style={{
               position: 'absolute',
               inset: 0,
               pointerEvents: 'none',
-              background: 'radial-gradient(ellipse at 50% 50%, rgba(217, 119, 87, 0.08) 0%, rgba(0, 0, 0, 0) 70%)',
+              background: isCardHovered
+                ? 'radial-gradient(ellipse at 50% 50%, rgba(217, 119, 87, 0.14) 0%, rgba(0, 0, 0, 0) 75%)'
+                : 'radial-gradient(ellipse at 50% 50%, rgba(217, 119, 87, 0.08) 0%, rgba(0, 0, 0, 0) 70%)',
+              transition: 'background 0.5s ease',
               zIndex: 0,
             }}
           />
@@ -231,11 +338,11 @@ export const ConstellationHero: React.FC<ConstellationHeroProps> = ({
             })}
 
             {/* Hub Interconnect Lines */}
-            <line x1="12%" y1="28%" x2="50%" y2="10%" stroke="#b0aea5" strokeOpacity="0.18" strokeWidth="1" />
-            <line x1="50%" y1="10%" x2="88%" y2="28%" stroke="#b0aea5" strokeOpacity="0.18" strokeWidth="1" />
-            <line x1="12%" y1="28%" x2="14%" y2="76%" stroke="#b0aea5" strokeOpacity="0.18" strokeWidth="1" />
-            <line x1="88%" y1="28%" x2="86%" y2="76%" stroke="#b0aea5" strokeOpacity="0.18" strokeWidth="1" />
-            <line x1="14%" y1="76%" x2="86%" y2="76%" stroke="#b0aea5" strokeOpacity="0.18" strokeWidth="1" />
+            <line x1="18%" y1="28%" x2="50%" y2="10%" stroke="#b0aea5" strokeOpacity="0.18" strokeWidth="1" />
+            <line x1="50%" y1="10%" x2="82%" y2="28%" stroke="#b0aea5" strokeOpacity="0.18" strokeWidth="1" />
+            <line x1="18%" y1="28%" x2="18%" y2="76%" stroke="#b0aea5" strokeOpacity="0.18" strokeWidth="1" />
+            <line x1="82%" y1="28%" x2="82%" y2="76%" stroke="#b0aea5" strokeOpacity="0.18" strokeWidth="1" />
+            <line x1="18%" y1="76%" x2="82%" y2="76%" stroke="#b0aea5" strokeOpacity="0.18" strokeWidth="1" />
           </svg>
 
           {/* Hub & Satellite Nodes (DOM elements with hover & physics) */}
