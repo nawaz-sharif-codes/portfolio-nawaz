@@ -409,7 +409,7 @@ export const ConstellationHero: React.FC<ConstellationHeroProps> = ({
                 margin: 0,
               }}
             >
-              Foxtel → DAZN Identity Migration
+              Foxtel → DAZN
             </h2>
 
             {/* Tagline / Subtitle */}
@@ -437,7 +437,7 @@ export const ConstellationHero: React.FC<ConstellationHeroProps> = ({
                 margin: 0,
               }}
             >
-              Leading a zero-downtime identity migration from a legacy IAM platform (ForgeRock AM / Sun Directory LDAP) to DAZN's modern OAuth2/OIDC ecosystem for Foxtel's ~1.4M user base — with resumable checkpointed extraction and live event-driven directory synchronization.
+              Leading a zero-downtime migration of Foxtel's ~1.4M-user identity platform ForgeRock onto DAZN's IAM systems. Built on resumable, checkpointed data extraction and live event-driven directory sync to keep both platforms consistent throughout the transition.
             </p>
 
             {/* Primary Action Button with Signature Bottom-Only Radius */}

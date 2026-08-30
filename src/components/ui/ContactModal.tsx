@@ -21,7 +21,7 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) =
     import.meta.env.VITE_FORMSPREE_ENDPOINT ||
     (import.meta.env.VITE_FORMSPREE_ID
       ? `https://formspree.io/f/${import.meta.env.VITE_FORMSPREE_ID}`
-      : 'https://formspree.io/f/mqaeajob');
+      : 'https://formspree.io/f/xqpkezrr');
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
