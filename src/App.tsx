@@ -9,6 +9,7 @@ import { ProvenanceSection } from './components/sections/ProvenanceSection';
 import { Footer } from './components/layout/Footer';
 import { ContactModal } from './components/ui/ContactModal';
 import { CaseStudyDetail } from './pages/CaseStudyDetail';
+import { ArchitectureDeckSection } from './components/sections/ArchitectureDeckSection';
 import { CASE_STUDIES } from './data/projects';
 import { updatePageSEO } from './utils/seo';
 
@@ -82,6 +83,7 @@ const HomePageView: React.FC = () => {
       <WorksGrid
         onViewCaseStudy={(slug) => navigate(`/work/${slug}`)}
       />
+      <ArchitectureDeckSection />
       <ProvenanceSection />
     </>
   );

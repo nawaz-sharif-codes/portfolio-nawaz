@@ -138,14 +138,14 @@ export const ConstellationHero: React.FC<ConstellationHeroProps> = ({
           onMouseLeave={handleMouseLeave}
           style={{
             position: 'relative',
-            backgroundColor: 'var(--color-slate-dark)',
+            backgroundColor: '#000000',
             borderRadius: '24px',
             overflow: 'hidden',
             minHeight: '780px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: '0 24px 48px rgba(0, 0, 0, 0.25)',
+            boxShadow: '0 24px 48px rgba(0, 0, 0, 0.35)',
             padding: 'clamp(40px, 6vw, 72px) clamp(20px, 4vw, 40px)',
           }}
           className="constellation-container"
@@ -156,7 +156,7 @@ export const ConstellationHero: React.FC<ConstellationHeroProps> = ({
               position: 'absolute',
               inset: 0,
               pointerEvents: 'none',
-              background: 'radial-gradient(ellipse at 50% 50%, rgba(217, 119, 87, 0.09) 0%, rgba(20, 20, 19, 0) 70%)',
+              background: 'radial-gradient(ellipse at 50% 50%, rgba(217, 119, 87, 0.08) 0%, rgba(0, 0, 0, 0) 70%)',
               zIndex: 0,
             }}
           />
@@ -295,14 +295,14 @@ export const ConstellationHero: React.FC<ConstellationHeroProps> = ({
                     pointerEvents: 'auto',
                     cursor: 'pointer',
                     padding: '6px 12px',
-                    backgroundColor: isHovered ? 'rgba(42, 42, 39, 0.95)' : 'rgba(28, 28, 26, 0.85)',
-                    border: isHovered ? '1px solid var(--color-clay)' : '1px solid rgba(176, 174, 165, 0.25)',
+                    backgroundColor: isHovered ? 'rgba(32, 32, 32, 0.95)' : 'rgba(15, 15, 15, 0.88)',
+                    border: isHovered ? '1px solid var(--color-clay)' : '1px solid rgba(255, 255, 255, 0.12)',
                     borderRadius: '6px',
                     display: 'flex',
                     flexDirection: 'column',
                     gap: '2px',
                     backdropFilter: 'blur(4px)',
-                    boxShadow: isHovered ? '0 6px 20px rgba(0, 0, 0, 0.6)' : 'none',
+                    boxShadow: isHovered ? '0 6px 20px rgba(0, 0, 0, 0.8)' : 'none',
                     transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
                   }}
                   className="constellation-satellite"
@@ -350,17 +350,12 @@ export const ConstellationHero: React.FC<ConstellationHeroProps> = ({
             style={{
               position: 'relative',
               zIndex: 10,
-              maxWidth: '600px',
+              maxWidth: '620px',
               textAlign: 'center',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              gap: 'var(--spacing-20)',
-              backgroundColor: 'rgba(20, 20, 19, 0.88)',
-              backdropFilter: 'blur(12px)',
-              padding: 'clamp(28px, 4vw, 40px) clamp(20px, 3.5vw, 36px)',
-              borderRadius: '20px',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
+              gap: 'var(--spacing-16)',
             }}
           >
             {/* Top Badge & Metric Snippet */}

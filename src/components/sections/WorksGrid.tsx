@@ -21,9 +21,9 @@ export const WorksGrid: React.FC<WorksGridProps> = ({ onViewCaseStudy }) => {
       slug: 'billing-event-processor',
     },
     {
-      title: 'Retention Offer Engine',
+      title: 'Retention Offers Engine',
       tagline: 'Matching at-risk B2B customers to the right offer, automatically.',
-      body: 'A NestJS microservice that segments soft-cancelled business customers against configurable, DynamoDB-backed promotional rules, replacing manual retention workflows with a rules engine.',
+      body: 'A NestJS microservice that evaluates soft-cancelled business customers against dynamic, DynamoDB-backed promotion rules in real time. Deployed with declarative Terraform infrastructure and full telemetry, replacing manual retention review workflows with an automated rules engine.',
       slug: 'retention-offers',
     },
     {
