@@ -1,6 +1,6 @@
 import React from 'react';
 
-export type ButtonVariant = 'ivory-filled' | 'clay-filled' | 'dark-outlined' | 'text-link';
+export type ButtonVariant = 'ivory-filled' | 'clay-filled' | 'dark-outlined' | 'text-link' | 'light-pill';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
@@ -24,6 +24,27 @@ export const Button: React.FC<ButtonProps> = ({
 
   const getVariantStyles = (): React.CSSProperties => {
     switch (variant) {
+      case 'light-pill':
+        return {
+          backgroundColor: isHovered ? 'var(--color-ivory-medium)' : '#ffffff',
+          color: 'var(--color-slate-dark)',
+          border: 'none',
+          borderRadius: '10px',
+          padding: '9px 18px',
+          fontFamily: 'var(--font-anthropic-sans)',
+          fontSize: '14px',
+          fontWeight: 'var(--font-weight-medium)',
+          letterSpacing: '-0.01em',
+          cursor: 'pointer',
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '6px',
+          textDecoration: 'none',
+          boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
+          transition: 'background-color var(--duration-fast) var(--ease-editorial), transform var(--duration-fast) var(--ease-editorial)',
+          transform: isActive ? 'scale(0.98)' : 'none',
+        };
       case 'ivory-filled':
         return {
           backgroundColor: isHovered ? 'var(--color-oat-warm)' : 'var(--color-ivory-light)',

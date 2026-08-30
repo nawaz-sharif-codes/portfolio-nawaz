@@ -17,19 +17,19 @@ export const WorksGrid: React.FC<WorksGridProps> = ({ onViewCaseStudy }) => {
     {
       title: 'Real-Time Billing Sync',
       tagline: 'A serverless pipeline handling B2B billing at scale.',
-      body: 'An event-driven system processing subscription lifecycle events off a live Kafka stream in real time — purchases, renewals, cancellations, suspensions — keeping support and sales systems in sync. Backend systems in this space have handled up to 1M requests/sec in production.',
+      body: 'An event-driven system processing subscription lifecycle events off a live Kafka stream in real time (purchases, renewals, cancellations, suspensions), keeping support and sales systems in sync. Backend systems in this space have handled up to 1M requests/sec in production.',
       slug: 'billing-event-processor',
     },
     {
       title: 'Retention Offer Engine',
       tagline: 'Matching at-risk B2B customers to the right offer, automatically.',
-      body: 'A NestJS microservice that segments soft-cancelled business customers against configurable, DynamoDB-backed promotional rules — replacing manual retention workflows with a rules engine.',
+      body: 'A NestJS microservice that segments soft-cancelled business customers against configurable, DynamoDB-backed promotional rules, replacing manual retention workflows with a rules engine.',
       slug: 'retention-offers',
     },
     {
-      title: 'Beat The ATS',
+      title: 'Beat the ATS',
       tagline: 'An AI-powered resume tool, built end to end.',
-      body: 'A multi-agent SaaS product that scores resumes against job descriptions, rewrites bullets to match, and generates tailored application materials — covering the full pipeline from LLM orchestration and streaming responses to auth, billing, and a credit-based pricing system.',
+      body: 'A multi-agent SaaS product that scores resumes against job descriptions, rewrites bullets to match, and generates tailored application materials, covering the full pipeline from LLM orchestration and streaming responses to auth, billing, and a credit-based pricing system.',
       slug: 'beattheats',
     },
   ];

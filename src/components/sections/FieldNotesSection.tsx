@@ -31,7 +31,7 @@ export const FieldNotesSection: React.FC = () => {
       author: 'Ajit Singh',
       category: 'Distributed Systems',
       summary:
-        'Why payment infrastructure has to be correctness-first — idempotency keys, state machines, and an immutable double-entry ledger.',
+        'Why payment infrastructure has to be correctness-first: idempotency keys, state machines, and an immutable double-entry ledger.',
       url: 'https://singhajit.com/payment-system-design/',
     },
     {
@@ -80,7 +80,7 @@ export const FieldNotesSection: React.FC = () => {
               color: 'var(--color-slate-dark)',
             }}
           >
-            Field Notes — Recommended Reading
+            Field Notes: Recommended Reading
           </h2>
           <p
             style={{
