@@ -50,7 +50,7 @@ const SectionScrollSync: React.FC = () => {
     } else if (pathname === '/') {
       updatePageSEO({
         title: 'Backend & Systems Engineer',
-        description: 'Backend and systems engineer working across identity infrastructure, event-driven billing pipelines, and distributed systems at DAZN.',
+        description: 'Software engineer with 5 years of experience architecting resilient, distributed systems for high-concurrency environments, delivering real-time streaming solutions at DAZN.',
         path: '/',
       });
       if (window.scrollY > 0) {

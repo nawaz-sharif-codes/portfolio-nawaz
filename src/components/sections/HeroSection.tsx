@@ -97,7 +97,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 color: 'var(--color-slate-dark)',
               }}
             >
-              Backend Engineer specialized in architecting scalable, distributed systems for high-concurrency environments, delivering real-time streaming solutions to millions of global users.
+              Software Engineer with 5 years of experience architecting resilient, distributed systems for high-concurrency environments, delivering real-time streaming solutions to millions of global users.
             </p>
           </div>
         </div>
