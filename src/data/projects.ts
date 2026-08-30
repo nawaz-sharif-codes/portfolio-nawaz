@@ -10,7 +10,7 @@ export interface CaseStudy {
 export const CASE_STUDIES: Record<string, CaseStudy> = {
   'identity-migration': {
     slug: 'identity-migration',
-    title: 'Foxtel → DAZN Identity Migration',
+    title: 'Foxtel → DAZN',
     subtitle: 'Re-architecting identity for 1.4 million users, live.',
     context:
       "Following DAZN's acquisition of Foxtel, the two companies run separate identity platforms. This project maps Foxtel's existing IAM setup end to end and plans the migration path onto DAZN's own identity systems — starting with OAuth2 client flows and social login federation.",
