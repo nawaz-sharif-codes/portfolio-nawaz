@@ -26,6 +26,14 @@ const SectionScrollSync: React.FC = () => {
       });
       const el = document.getElementById('works');
       if (el) setTimeout(() => el.scrollIntoView({ behavior: 'smooth' }), 50);
+    } else if (pathname === '/docs') {
+      updatePageSEO({
+        title: 'Architecture Decks & Docs',
+        description: 'Visual system blueprints, interactive architecture decks, and distributed system documentation by Nawaz Sharif.',
+        path: '/docs',
+      });
+      const el = document.getElementById('architecture-decks');
+      if (el) setTimeout(() => el.scrollIntoView({ behavior: 'smooth' }), 50);
     } else if (pathname === '/experience') {
       updatePageSEO({
         title: 'Experience',
@@ -144,6 +152,10 @@ export const App: React.FC = () => {
       navigate('/projects');
       const el = document.getElementById('works');
       if (el) el.scrollIntoView({ behavior: 'smooth' });
+    } else if (path === '/docs') {
+      navigate('/docs');
+      const el = document.getElementById('architecture-decks');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
     } else if (path === '/experience') {
       navigate('/experience');
       const el = document.getElementById('provenance');
@@ -179,6 +191,7 @@ export const App: React.FC = () => {
         <Routes>
           <Route path="/" element={<HomePageView />} />
           <Route path="/projects" element={<HomePageView />} />
+          <Route path="/docs" element={<HomePageView />} />
           <Route path="/experience" element={<HomePageView />} />
           <Route path="/skills" element={<HomePageView />} />
           <Route path="/contact" element={<HomePageView />} />

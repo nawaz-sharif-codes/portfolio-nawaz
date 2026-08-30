@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { ConnectDropdown } from './ConnectDropdown';
 
 interface NavbarProps {
   onNavigate?: (path: string) => void;
@@ -26,6 +27,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, onOpenContact }) => 
 
   const navLinks = [
     { label: 'Projects', href: '/projects' },
+    { label: 'Docs', href: '/docs' },
     { label: 'Experience', href: '/experience' },
     { label: 'Skills', href: '/skills' },
     { label: 'Contact', href: '/contact' },
@@ -34,6 +36,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, onOpenContact }) => 
   const externalLinks = [
     { label: 'GitHub', href: 'https://github.com/nawaz-sharif-codes' },
     { label: 'LinkedIn', href: 'https://www.linkedin.com/in/nawazsharif/' },
+    { label: 'Instagram', href: 'https://www.instagram.com/life.with.nawazzz' },
+    { label: 'WhatsApp', href: 'https://wa.me/919063656763?text=Hi%20Nawaz,%20I%20saw%20your%20portfolio!' },
   ];
 
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
@@ -162,22 +166,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, onOpenContact }) => 
             }}
           />
 
-          {/* External Code & Professional Channels */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 'var(--spacing-24)',
-            }}
-          >
-            {externalLinks.map((link) => (
-              <ExternalNavItem
-                key={link.label}
-                label={link.label}
-                href={link.href}
-              />
-            ))}
-          </div>
+          {/* Connect Combo Dropdown (Anthropic Style Split-Action Button) */}
+          <ConnectDropdown onOpenContact={onOpenContact} />
         </div>
 
         {/* Mobile Hamburger Button */}
@@ -322,39 +312,6 @@ const NavLinkItem: React.FC<NavLinkItemProps> = ({ label, href, onClick }) => {
       }}
     >
       {label}
-    </a>
-  );
-};
-
-interface ExternalNavItemProps {
-  label: string;
-  href: string;
-}
-
-const ExternalNavItem: React.FC<ExternalNavItemProps> = ({ label, href }) => {
-  const [isHovered, setIsHovered] = useState(false);
-
-  return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      style={{
-        fontFamily: 'var(--font-anthropic-sans)',
-        fontSize: '14px',
-        fontWeight: 'var(--font-weight-regular)',
-        letterSpacing: '-0.005em',
-        color: isHovered ? 'var(--color-slate-dark)' : 'var(--color-cloud-dark)',
-        textDecoration: 'none',
-        transition: 'color var(--duration-fast) var(--ease-editorial)',
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: '4px',
-      }}
-    >
-      {label} <span style={{ fontSize: '11px' }}>↗</span>
     </a>
   );
 };
