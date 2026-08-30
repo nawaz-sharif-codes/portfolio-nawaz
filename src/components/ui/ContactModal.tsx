@@ -13,8 +13,15 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) =
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   const firstInputRef = useRef<HTMLInputElement>(null);
+
+  const formspreeEndpoint =
+    import.meta.env.VITE_FORMSPREE_ENDPOINT ||
+    (import.meta.env.VITE_FORMSPREE_ID
+      ? `https://formspree.io/f/${import.meta.env.VITE_FORMSPREE_ID}`
+      : 'https://formspree.io/f/mqaeajob');
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -30,6 +37,7 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) =
     } else {
       document.body.style.overflow = '';
       setIsSubmitted(false);
+      setErrorMessage(null);
     }
 
     return () => {
@@ -40,16 +48,47 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) =
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.message) return;
 
     setIsSubmitting(true);
-    // Simulate lightweight submission
-    setTimeout(() => {
+    setErrorMessage(null);
+
+    try {
+      const response = await fetch(formspreeEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          message: formData.message,
+          _replyto: formData.email,
+        }),
+      });
+
+      if (response.ok) {
+        setIsSubmitted(true);
+      } else {
+        const data = await response.json().catch(() => ({}));
+        const serverError =
+          data?.errors?.[0]?.message ||
+          data?.error ||
+          'Submission could not be delivered to the email service.';
+        setErrorMessage(
+          `${serverError} Please email Nawaz directly at nawazsharif.works@gmail.com.`
+        );
+      }
+    } catch (err) {
+      setErrorMessage(
+        'Network transmission error. Please email Nawaz directly at nawazsharif.works@gmail.com.'
+      );
+    } finally {
       setIsSubmitting(false);
-      setIsSubmitted(true);
-    }, 600);
+    }
   };
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -98,23 +137,27 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) =
           aria-label="Close dialog"
           style={{
             position: 'absolute',
-            top: '24px',
-            right: '24px',
-            background: 'none',
+            top: '20px',
+            right: '20px',
+            background: 'transparent',
             border: 'none',
-            width: '32px',
-            height: '32px',
-            borderRadius: '6px',
-            display: 'inline-flex',
+            color: 'var(--color-slate-medium)',
+            cursor: 'pointer',
+            padding: '8px',
+            display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: 'var(--color-slate-dark)',
-            cursor: 'pointer',
-            padding: 0,
-            transition: 'background-color var(--duration-fast) var(--ease-editorial)',
+            borderRadius: '50%',
+            transition: 'all var(--duration-fast) var(--ease-editorial)',
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-oat-warm)')}
-          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = 'var(--color-slate-dark)';
+            e.currentTarget.style.backgroundColor = 'var(--color-oat-warm)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = 'var(--color-slate-medium)';
+            e.currentTarget.style.backgroundColor = 'transparent';
+          }}
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -123,19 +166,21 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) =
         </button>
 
         {isSubmitted ? (
-          <div style={{ textAlign: 'center', padding: 'var(--spacing-24) 0' }}>
+          /* Success Confirmation View */
+          <div style={{ textAlign: 'center', padding: 'var(--spacing-16) 0' }}>
             <span
               style={{
                 fontFamily: 'var(--font-anthropic-mono)',
-                fontSize: 'var(--text-caption)',
-                color: 'var(--color-cloud-dark)',
+                fontSize: '11px',
+                fontWeight: 'var(--font-weight-semibold)',
+                letterSpacing: '0.1em',
                 textTransform: 'uppercase',
-                letterSpacing: '0.08em',
+                color: 'var(--color-cloud-dark)',
                 display: 'block',
-                marginBottom: 'var(--spacing-12)',
+                marginBottom: 'var(--spacing-8)',
               }}
             >
-              TRANSMISSION RECEIVED
+              Transmission Received
             </span>
             <h3
               style={{
@@ -143,8 +188,7 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) =
                 fontSize: '28px',
                 fontWeight: 'var(--font-weight-bold)',
                 color: 'var(--color-slate-dark)',
-                marginBottom: 'var(--spacing-16)',
-                letterSpacing: 'var(--tracking-heading)',
+                marginBottom: 'var(--spacing-12)',
               }}
             >
               Message Sent.
@@ -218,23 +262,59 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) =
                 fontSize: 'var(--text-body-sm)',
                 color: 'var(--color-slate-medium)',
                 marginBottom: 'var(--spacing-24)',
-                lineHeight: '1.4',
+                lineHeight: 'var(--leading-body)',
               }}
             >
               Reach out for backend architecture, high-throughput systems, or engineering inquiries.
             </p>
 
+            {errorMessage && (
+              <div
+                role="alert"
+                style={{
+                  backgroundColor: 'rgba(217, 119, 87, 0.1)',
+                  border: '1px solid rgba(217, 119, 87, 0.4)',
+                  borderRadius: 'var(--radius-cards)',
+                  padding: 'var(--spacing-12) var(--spacing-16)',
+                  color: 'var(--color-slate-dark)',
+                  fontFamily: 'var(--font-anthropic-sans)',
+                  fontSize: 'var(--text-body-sm)',
+                  lineHeight: '1.4',
+                  marginBottom: 'var(--spacing-16)',
+                }}
+              >
+                <p style={{ margin: 0, fontWeight: 'var(--font-weight-semibold)', color: '#b91c1c' }}>
+                  Transmission Error
+                </p>
+                <p style={{ margin: 'var(--spacing-4) 0 0' }}>
+                  {errorMessage}{' '}
+                  <a
+                    href="mailto:nawazsharif.works@gmail.com"
+                    style={{
+                      color: 'var(--color-slate-dark)',
+                      fontWeight: 'var(--font-weight-bold)',
+                      textDecoration: 'underline',
+                    }}
+                  >
+                    nawazsharif.works@gmail.com
+                  </a>
+                </p>
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-16)' }}>
               {/* Name Field */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <div>
                 <label
                   htmlFor="contact-name"
                   style={{
+                    display: 'block',
                     fontFamily: 'var(--font-anthropic-sans)',
-                    fontSize: '13px',
+                    fontSize: 'var(--text-caption)',
                     fontWeight: 'var(--font-weight-semibold)',
+                    letterSpacing: '0.02em',
                     color: 'var(--color-slate-dark)',
-                    letterSpacing: '-0.01em',
+                    marginBottom: 'var(--spacing-8)',
                   }}
                 >
                   Name <span style={{ color: 'var(--color-cloud-dark)' }}>*</span>
@@ -244,19 +324,21 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) =
                   id="contact-name"
                   type="text"
                   required
-                  placeholder="e.g. Alex Morgan"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  placeholder="e.g. Alex Morgan"
                   style={{
+                    width: '100%',
+                    padding: '12px 14px',
+                    fontFamily: 'var(--font-anthropic-sans)',
+                    fontSize: 'var(--text-body-sm)',
                     backgroundColor: '#ffffff',
+                    color: 'var(--color-slate-dark)',
                     border: '1px solid var(--color-stone)',
                     borderRadius: '8px',
-                    padding: '10px 14px',
-                    fontFamily: 'var(--font-anthropic-sans)',
-                    fontSize: '15px',
-                    color: 'var(--color-slate-dark)',
                     outline: 'none',
                     transition: 'border-color var(--duration-fast) var(--ease-editorial), box-shadow var(--duration-fast) var(--ease-editorial)',
+                    boxSizing: 'border-box',
                   }}
                   onFocus={(e) => {
                     e.currentTarget.style.borderColor = 'var(--color-slate-dark)';
@@ -270,15 +352,17 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) =
               </div>
 
               {/* Email Field */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <div>
                 <label
                   htmlFor="contact-email"
                   style={{
+                    display: 'block',
                     fontFamily: 'var(--font-anthropic-sans)',
-                    fontSize: '13px',
+                    fontSize: 'var(--text-caption)',
                     fontWeight: 'var(--font-weight-semibold)',
+                    letterSpacing: '0.02em',
                     color: 'var(--color-slate-dark)',
-                    letterSpacing: '-0.01em',
+                    marginBottom: 'var(--spacing-8)',
                   }}
                 >
                   Email <span style={{ color: 'var(--color-cloud-dark)' }}>*</span>
@@ -287,19 +371,21 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) =
                   id="contact-email"
                   type="email"
                   required
-                  placeholder="alex@company.com"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  placeholder="alex@company.com"
                   style={{
+                    width: '100%',
+                    padding: '12px 14px',
+                    fontFamily: 'var(--font-anthropic-sans)',
+                    fontSize: 'var(--text-body-sm)',
                     backgroundColor: '#ffffff',
+                    color: 'var(--color-slate-dark)',
                     border: '1px solid var(--color-stone)',
                     borderRadius: '8px',
-                    padding: '10px 14px',
-                    fontFamily: 'var(--font-anthropic-sans)',
-                    fontSize: '15px',
-                    color: 'var(--color-slate-dark)',
                     outline: 'none',
                     transition: 'border-color var(--duration-fast) var(--ease-editorial), box-shadow var(--duration-fast) var(--ease-editorial)',
+                    boxSizing: 'border-box',
                   }}
                   onFocus={(e) => {
                     e.currentTarget.style.borderColor = 'var(--color-slate-dark)';
@@ -313,15 +399,17 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) =
               </div>
 
               {/* Message Field */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <div>
                 <label
                   htmlFor="contact-message"
                   style={{
+                    display: 'block',
                     fontFamily: 'var(--font-anthropic-sans)',
-                    fontSize: '13px',
+                    fontSize: 'var(--text-caption)',
                     fontWeight: 'var(--font-weight-semibold)',
+                    letterSpacing: '0.02em',
                     color: 'var(--color-slate-dark)',
-                    letterSpacing: '-0.01em',
+                    marginBottom: 'var(--spacing-8)',
                   }}
                 >
                   Message <span style={{ color: 'var(--color-cloud-dark)' }}>*</span>
@@ -330,21 +418,23 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) =
                   id="contact-message"
                   required
                   rows={4}
-                  placeholder="Overview of your system, team requirements, or project scope..."
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                  placeholder="Overview of your system, team requirements, or project scope..."
                   style={{
+                    width: '100%',
+                    padding: '12px 14px',
+                    fontFamily: 'var(--font-anthropic-sans)',
+                    fontSize: 'var(--text-body-sm)',
                     backgroundColor: '#ffffff',
+                    color: 'var(--color-slate-dark)',
                     border: '1px solid var(--color-stone)',
                     borderRadius: '8px',
-                    padding: '10px 14px',
-                    fontFamily: 'var(--font-anthropic-sans)',
-                    fontSize: '15px',
-                    color: 'var(--color-slate-dark)',
                     outline: 'none',
                     resize: 'vertical',
-                    minHeight: '96px',
+                    minHeight: '100px',
                     transition: 'border-color var(--duration-fast) var(--ease-editorial), box-shadow var(--duration-fast) var(--ease-editorial)',
+                    boxSizing: 'border-box',
                   }}
                   onFocus={(e) => {
                     e.currentTarget.style.borderColor = 'var(--color-slate-dark)';
@@ -357,8 +447,8 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) =
                 />
               </div>
 
-              {/* CTA Button */}
-              <div style={{ paddingTop: 'var(--spacing-8)' }}>
+              {/* Submit CTA */}
+              <div style={{ marginTop: 'var(--spacing-8)' }}>
                 <button
                   type="submit"
                   disabled={isSubmitting}
@@ -366,25 +456,25 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) =
                     width: '100%',
                     backgroundColor: 'var(--color-slate-dark)',
                     color: 'var(--color-ivory-light)',
-                    border: 'none',
-                    padding: '14px 24px',
-                    borderRadius: '8px',
                     fontFamily: 'var(--font-anthropic-sans)',
-                    fontSize: '15px',
-                    fontWeight: 'var(--font-weight-semibold)',
+                    fontSize: '14px',
+                    fontWeight: 'var(--font-weight-medium)',
+                    padding: '13px',
+                    borderRadius: '8px',
+                    border: 'none',
                     cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                    opacity: isSubmitting ? 0.7 : 1,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    gap: '8px',
+                    gap: 'var(--spacing-8)',
                     transition: 'all var(--duration-fast) var(--ease-editorial)',
-                    opacity: isSubmitting ? 0.7 : 1,
                   }}
                   onMouseEnter={(e) => {
-                    if (!isSubmitting) e.currentTarget.style.backgroundColor = '#262624';
+                    if (!isSubmitting) e.currentTarget.style.opacity = '0.9';
                   }}
                   onMouseLeave={(e) => {
-                    if (!isSubmitting) e.currentTarget.style.backgroundColor = 'var(--color-slate-dark)';
+                    if (!isSubmitting) e.currentTarget.style.opacity = '1';
                   }}
                 >
                   {isSubmitting ? (
@@ -413,7 +503,6 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) =
                   style={{
                     color: 'var(--color-slate-dark)',
                     textDecoration: 'underline',
-                    textUnderlineOffset: '2px',
                   }}
                 >
                   nawazsharif.works@gmail.com
@@ -423,17 +512,6 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) =
           </div>
         )}
       </div>
-
-      <style>{`
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        @keyframes scaleIn {
-          from { opacity: 0; transform: scale(0.97) translateY(8px); }
-          to { opacity: 1; transform: scale(1) translateY(0); }
-        }
-      `}</style>
     </div>
   );
 };

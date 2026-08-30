@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 interface NavbarProps {
-  onNavigate?: (sectionId: string) => void;
+  onNavigate?: (path: string) => void;
   onOpenContact?: () => void;
 }
 
@@ -25,10 +25,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, onOpenContact }) => 
   }, []);
 
   const navLinks = [
-    { label: 'Projects', href: '#works' },
-    { label: 'Experience', href: '#provenance' },
-    { label: 'Skills', href: '#skills' },
-    { label: 'Contact', href: '#contact' },
+    { label: 'Projects', href: '/projects' },
+    { label: 'Experience', href: '/experience' },
+    { label: 'Skills', href: '/skills' },
+    { label: 'Contact', href: '/contact' },
   ];
 
   const externalLinks = [
@@ -40,23 +40,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, onOpenContact }) => 
     e.preventDefault();
     setMobileMenuOpen(false);
 
-    if (href === '#contact') {
-      if (onOpenContact) {
-        onOpenContact();
-      }
-      return;
-    }
-
-    if (href.startsWith('#')) {
-      const targetId = href.substring(1);
-      if (onNavigate) {
-        onNavigate(targetId);
-      } else {
-        const element = document.getElementById(targetId);
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth' });
-        }
-      }
+    if (onNavigate) {
+      onNavigate(href);
+    } else if (href === '/contact' && onOpenContact) {
+      onOpenContact();
     }
   };
 
@@ -83,10 +70,14 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, onOpenContact }) => 
       >
         {/* Editorial Wordmark Logo with Smooth Scroll Morph (NAWAZ SHARIF -> NS) */}
         <a
-          href="#"
+          href="/"
           onClick={(e) => {
             e.preventDefault();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            if (onNavigate) {
+              onNavigate('/');
+            } else {
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
           }}
           aria-label="Nawaz Sharif Home"
           style={{
@@ -189,24 +180,23 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, onOpenContact }) => 
           </div>
         </div>
 
-        {/* Mobile Menu Button */}
+        {/* Mobile Hamburger Button */}
         <button
-          className="mobile-menu-btn"
-          aria-label="Toggle navigation menu"
-          aria-expanded={mobileMenuOpen}
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          aria-label={mobileMenuOpen ? 'Close Navigation Menu' : 'Open Navigation Menu'}
+          aria-expanded={mobileMenuOpen}
           style={{
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
+            alignItems: 'center',
             gap: '5px',
-            width: '32px',
-            height: '32px',
-            background: 'none',
+            background: 'transparent',
             border: 'none',
             cursor: 'pointer',
-            padding: 0,
+            padding: 'var(--spacing-8)',
           }}
+          className="mobile-hamburger"
         >
           <span
             style={{
@@ -290,12 +280,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, onOpenContact }) => 
         </div>
       )}
 
+      {/* Media Query Styles for Desktop/Mobile responsive toggle */}
       <style>{`
         @media (min-width: 768px) {
           .desktop-nav {
             display: flex !important;
           }
-          .mobile-menu-btn {
+          .mobile-hamburger {
             display: none !important;
           }
         }

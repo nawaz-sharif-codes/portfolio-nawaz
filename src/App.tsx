@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Routes, Route, useNavigate, useLocation, useParams } from 'react-router-dom';
 import { SkipLink } from './components/ui/SkipLink';
 import { Navbar } from './components/layout/Navbar';
 import { HeroSection } from './components/sections/HeroSection';
@@ -9,104 +10,189 @@ import { Footer } from './components/layout/Footer';
 import { ContactModal } from './components/ui/ContactModal';
 import { CaseStudyDetail } from './pages/CaseStudyDetail';
 import { CASE_STUDIES } from './data/projects';
+import { updatePageSEO } from './utils/seo';
+
+// Route section scroll coordinator matching editorial smooth motion
+const SectionScrollSync: React.FC = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    if (pathname === '/projects') {
+      updatePageSEO({
+        title: 'Projects',
+        description: 'Selected production systems and distributed architectures engineered by Nawaz Sharif.',
+        path: '/projects',
+      });
+      const el = document.getElementById('works');
+      if (el) setTimeout(() => el.scrollIntoView({ behavior: 'smooth' }), 50);
+    } else if (pathname === '/experience') {
+      updatePageSEO({
+        title: 'Experience',
+        description: 'Engineering career provenance and track record at DAZN and ENTAIN.',
+        path: '/experience',
+      });
+      const el = document.getElementById('provenance');
+      if (el) setTimeout(() => el.scrollIntoView({ behavior: 'smooth' }), 50);
+    } else if (pathname === '/skills') {
+      updatePageSEO({
+        title: 'Skills',
+        description: 'Technical provenance, backend engineering stack, distributed databases, cloud systems, and observability tooling.',
+        path: '/skills',
+      });
+      const el = document.getElementById('skills');
+      if (el) setTimeout(() => el.scrollIntoView({ behavior: 'smooth' }), 50);
+    } else if (pathname === '/contact') {
+      updatePageSEO({
+        title: 'Contact',
+        description: 'Get in touch with Nawaz Sharif for backend architecture, high-throughput systems, or engineering inquiries.',
+        path: '/contact',
+      });
+    } else if (pathname === '/') {
+      updatePageSEO({
+        title: 'Backend & Systems Engineer',
+        description: 'Software engineer with 5 years of experience architecting resilient, distributed systems for high-concurrency environments, delivering real-time streaming solutions at DAZN.',
+        path: '/',
+      });
+      if (window.scrollY > 0) {
+        setTimeout(() => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 50);
+      }
+    }
+  }, [pathname]);
+
+  return null;
+};
+
+// Main Home Page Component rendering all core sections
+const HomePageView: React.FC = () => {
+  const navigate = useNavigate();
+
+  return (
+    <>
+      <HeroSection
+        onScaleClick={(e) => {
+          e.preventDefault();
+          navigate('/experience');
+        }}
+      />
+      <FeaturedHeroCard
+        onViewCaseStudy={(slug) => navigate(`/work/${slug}`)}
+      />
+      <WorksGrid
+        onViewCaseStudy={(slug) => navigate(`/work/${slug}`)}
+      />
+      <ProvenanceSection />
+    </>
+  );
+};
+
+// Case Study View Component
+const CaseStudyPageView: React.FC = () => {
+  const { slug } = useParams<{ slug: string }>();
+  const navigate = useNavigate();
+  const currentSlug = slug || 'identity-migration';
+  const project = CASE_STUDIES[currentSlug];
+
+  useEffect(() => {
+    if (project) {
+      updatePageSEO({
+        title: project.title,
+        description: `${project.subtitle} ${project.context}`,
+        path: `/work/${project.slug}`,
+      });
+    } else {
+      updatePageSEO({
+        title: 'Case Study',
+        description: 'Production system case study by Nawaz Sharif.',
+        path: `/work/${currentSlug}`,
+      });
+    }
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [project, currentSlug]);
+
+  return (
+    <CaseStudyDetail
+      slug={currentSlug}
+      onBackToIndex={() => navigate('/')}
+      onNavigateCaseStudy={(nextSlug) => navigate(`/work/${nextSlug}`)}
+    />
+  );
+};
 
 export const App: React.FC = () => {
-  const [currentRoute, setCurrentRoute] = useState<string>(window.location.pathname);
+  const navigate = useNavigate();
+  const location = useLocation();
   const [isContactOpen, setIsContactOpen] = useState<boolean>(false);
 
+  // Sync contact modal open state with /contact route
   useEffect(() => {
-    const handlePopState = () => {
-      setCurrentRoute(window.location.pathname);
-    };
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, []);
-
-  // Update dynamic document title based on route
-  useEffect(() => {
-    if (currentRoute.startsWith('/work/')) {
-      const slug = currentRoute.replace('/work/', '');
-      const project = CASE_STUDIES[slug];
-      document.title = project
-        ? `${project.title} — Nawaz Sharif`
-        : 'Case Study — Nawaz Sharif';
+    if (location.pathname === '/contact') {
+      setIsContactOpen(true);
     } else {
-      document.title = 'Nawaz Sharif — Backend & Systems Engineer';
+      setIsContactOpen(false);
     }
-  }, [currentRoute]);
+  }, [location.pathname]);
 
-  const navigateTo = (path: string) => {
-    window.history.pushState({}, '', path);
-    setCurrentRoute(path);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handleNavbarNavigate = (sectionId: string) => {
-    if (currentRoute !== '/') {
-      window.history.pushState({}, '', '/');
-      setCurrentRoute('/');
-      setTimeout(() => {
-        const el = document.getElementById(sectionId);
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
-      }, 50);
-    } else {
-      const el = document.getElementById(sectionId);
+  const handleNavbarNavigate = (path: string) => {
+    if (path === '/') {
+      navigate('/');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (path === '/projects') {
+      navigate('/projects');
+      const el = document.getElementById('works');
       if (el) el.scrollIntoView({ behavior: 'smooth' });
+    } else if (path === '/experience') {
+      navigate('/experience');
+      const el = document.getElementById('provenance');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    } else if (path === '/skills') {
+      navigate('/skills');
+      const el = document.getElementById('skills');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    } else if (path === '/contact') {
+      navigate('/contact');
+    } else {
+      navigate(path);
     }
   };
 
-  const isCaseStudyRoute = currentRoute.startsWith('/work/');
-  const caseStudySlug = isCaseStudyRoute ? currentRoute.replace('/work/', '') : '';
+  const handleCloseContactModal = () => {
+    setIsContactOpen(false);
+    if (location.pathname === '/contact') {
+      navigate('/');
+    }
+  };
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <SectionScrollSync />
       <SkipLink targetId="main-content" />
       <Navbar
         onNavigate={handleNavbarNavigate}
-        onOpenContact={() => setIsContactOpen(true)}
+        onOpenContact={() => navigate('/contact')}
       />
 
-      <main id="main-content" tabIndex={-1} style={{ flex: 1, outline: 'none' }} className="page-enter" key={currentRoute}>
-        {isCaseStudyRoute ? (
-          <CaseStudyDetail
-            slug={caseStudySlug}
-            onBackToIndex={() => navigateTo('/')}
-            onNavigateCaseStudy={(slug) => navigateTo(`/work/${slug}`)}
-          />
-        ) : (
-          <>
-            {/* Section 3: Asymmetric Hero */}
-            <HeroSection
-              onScaleClick={(e) => {
-                e.preventDefault();
-                const el = document.getElementById('provenance');
-                if (el) el.scrollIntoView({ behavior: 'smooth' });
-              }}
-            />
-
-            {/* Section 4: Featured Highlight (Flagship Case Study) */}
-            <FeaturedHeroCard
-              onViewCaseStudy={(slug) => navigateTo(`/work/${slug}`)}
-            />
-
-            {/* Section 5: Works Grid (3 Cards) */}
-            <WorksGrid
-              onViewCaseStudy={(slug) => navigateTo(`/work/${slug}`)}
-            />
-
-            {/* Section 6: Work Experience (Provenance) */}
-            <ProvenanceSection />
-          </>
-        )}
+      <main id="main-content" tabIndex={-1} style={{ flex: 1, outline: 'none' }}>
+        <Routes>
+          <Route path="/" element={<HomePageView />} />
+          <Route path="/projects" element={<HomePageView />} />
+          <Route path="/experience" element={<HomePageView />} />
+          <Route path="/skills" element={<HomePageView />} />
+          <Route path="/contact" element={<HomePageView />} />
+          <Route path="/work/:slug" element={<CaseStudyPageView />} />
+          {/* Catch-all fallback */}
+          <Route path="*" element={<HomePageView />} />
+        </Routes>
       </main>
 
       {/* Minimal Slate Dark Footer */}
       <Footer />
 
-      {/* Contact Form Modal */}
+      {/* Contact Form Modal (Popup design as requested) */}
       <ContactModal
         isOpen={isContactOpen}
-        onClose={() => setIsContactOpen(false)}
+        onClose={handleCloseContactModal}
       />
     </div>
   );
