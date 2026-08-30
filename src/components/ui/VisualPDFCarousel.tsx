@@ -67,7 +67,7 @@ export const VisualPDFCarousel: React.FC<VisualPDFCarouselProps> = ({
     window.print();
   };
 
-  // Render Vector Diagram per Slide Type
+  // Render Vector Diagram per Slide Type with Smooth Motion
   const renderSlideDiagram = (type: DeckSlide['diagramType']) => {
     switch (type) {
       case 'pipeline':
@@ -79,60 +79,79 @@ export const VisualPDFCarousel: React.FC<VisualPDFCarouselProps> = ({
             aria-label="Identity Migration Architecture Flow"
           >
             <rect width="760" height="260" rx="12" fill="#141413" />
-            {/* Grid Pattern */}
             <defs>
-              <pattern id="diag-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+              <pattern id="diag-grid-1" width="24" height="24" patternUnits="userSpaceOnUse">
                 <path d="M 24 0 L 0 0 0 24" fill="none" stroke="rgba(255, 255, 255, 0.04)" strokeWidth="1" />
               </pattern>
             </defs>
-            <rect width="760" height="260" fill="url(#diag-grid)" rx="12" />
+            <rect width="760" height="260" fill="url(#diag-grid-1)" rx="12" />
 
             {/* Stage 1: Legacy Realm */}
-            <g transform="translate(40, 45)">
+            <g transform="translate(40, 45)" className="diag-node">
               <rect width="160" height="75" rx="8" fill="#1e1e1d" stroke="#3d3d3a" strokeWidth="1" />
-              <text x="14" y="24" fill="#87867f" fontFamily="var(--font-anthropic-mono)" fontSize="10" fontWeight="600">SOURCE STORE</text>
+              <circle cx="20" cy="20" r="3" fill="#87867f" />
+              <text x="28" y="24" fill="#87867f" fontFamily="var(--font-anthropic-mono)" fontSize="10" fontWeight="600">SOURCE STORE</text>
               <text x="14" y="44" fill="#faf9f5" fontFamily="var(--font-anthropic-sans)" fontSize="13" fontWeight="600">Sun Directory LDAP</text>
               <text x="14" y="60" fill="#b0aea5" fontFamily="var(--font-anthropic-sans)" fontSize="11">ForgeRock AM Realm</text>
             </g>
 
-            {/* Connection Arrow 1 */}
-            <line x1="200" y1="82" x2="285" y2="82" stroke="#d97757" strokeWidth="2" strokeDasharray="4 4" />
+            {/* Connection Flow 1: 1.4M ETL with Animated Stream & Data Packet */}
+            <line x1="200" y1="82" x2="285" y2="82" stroke="#d97757" strokeWidth="2" strokeDasharray="6 4" className="flow-dash-fast" />
             <polygon points="285,82 277,77 277,87" fill="#d97757" />
             <text x="242" y="72" fill="#d97757" fontFamily="var(--font-anthropic-mono)" fontSize="9.5" textAnchor="middle">1.4M ETL</text>
+            
+            {/* Animated Moving Data Packet 1 */}
+            <circle cx="200" cy="82" r="3.5" fill="#faf9f5" filter="drop-shadow(0 0 4px #d97757)">
+              <animate attributeName="cx" values="200;285" dur="1.8s" repeatCount="indefinite" />
+              <animate attributeName="opacity" values="0;1;1;0" dur="1.8s" repeatCount="indefinite" />
+            </circle>
 
-            {/* Stage 2: Resumable Pipeline */}
-            <g transform="translate(285, 45)">
+            {/* Stage 2: Resumable Pipeline (Pulsing Core) */}
+            <g transform="translate(285, 45)" className="diag-node">
               <rect width="180" height="75" rx="8" fill="#1e1e1d" stroke="#d97757" strokeWidth="1.5" />
-              <text x="14" y="24" fill="#d97757" fontFamily="var(--font-anthropic-mono)" fontSize="10" fontWeight="600">CORE PIPELINE</text>
+              <circle cx="20" cy="20" r="3" fill="#d97757" className="pulse-dot" />
+              <circle cx="20" cy="20" r="6" fill="none" stroke="#d97757" strokeWidth="1" opacity="0.6">
+                <animate attributeName="r" values="3;10" dur="2s" repeatCount="indefinite" />
+                <animate attributeName="opacity" values="0.8;0" dur="2s" repeatCount="indefinite" />
+              </circle>
+              <text x="28" y="24" fill="#d97757" fontFamily="var(--font-anthropic-mono)" fontSize="10" fontWeight="600">CORE PIPELINE</text>
               <text x="14" y="44" fill="#faf9f5" fontFamily="var(--font-anthropic-sans)" fontSize="13" fontWeight="600">Resumable Extractor</text>
               <text x="14" y="60" fill="#b0aea5" fontFamily="var(--font-anthropic-sans)" fontSize="11">WAL Checkpointing</text>
             </g>
 
-            {/* Connection Arrow 2 */}
-            <line x1="465" y1="82" x2="550" y2="82" stroke="#faf9f5" strokeWidth="2" />
+            {/* Connection Flow 2: OIDC Bridge with Animated Stream & Data Packet */}
+            <line x1="465" y1="82" x2="550" y2="82" stroke="#faf9f5" strokeWidth="2" strokeDasharray="6 4" className="flow-dash-fast" />
             <polygon points="550,82 542,77 542,87" fill="#faf9f5" />
             <text x="507" y="72" fill="#faf9f5" fontFamily="var(--font-anthropic-mono)" fontSize="9.5" textAnchor="middle">OIDC Bridge</text>
+            
+            {/* Animated Moving Data Packet 2 */}
+            <circle cx="465" cy="82" r="3.5" fill="#d97757" filter="drop-shadow(0 0 4px #faf9f5)">
+              <animate attributeName="cx" values="465;550" dur="1.8s" begin="0.9s" repeatCount="indefinite" />
+              <animate attributeName="opacity" values="0;1;1;0" dur="1.8s" begin="0.9s" repeatCount="indefinite" />
+            </circle>
 
             {/* Stage 3: Live Sync & Target Realm */}
-            <g transform="translate(550, 45)">
+            <g transform="translate(550, 45)" className="diag-node">
               <rect width="170" height="75" rx="8" fill="#1e1e1d" stroke="#3d3d3a" strokeWidth="1" />
-              <text x="14" y="24" fill="#87867f" fontFamily="var(--font-anthropic-mono)" fontSize="10" fontWeight="600">TARGET REALM</text>
+              <circle cx="20" cy="20" r="3" fill="#faf9f5" />
+              <text x="28" y="24" fill="#87867f" fontFamily="var(--font-anthropic-mono)" fontSize="10" fontWeight="600">TARGET REALM</text>
               <text x="14" y="44" fill="#faf9f5" fontFamily="var(--font-anthropic-sans)" fontSize="13" fontWeight="600">DAZN IAM Edge</text>
               <text x="14" y="60" fill="#b0aea5" fontFamily="var(--font-anthropic-sans)" fontSize="11">OAuth2 & PKCE 7636</text>
             </g>
 
             {/* Lower Parallel Track: Dual-Write CDC Sync */}
-            <g transform="translate(40, 155)">
+            <g transform="translate(40, 155)" className="diag-node">
               <rect width="680" height="65" rx="8" fill="rgba(217, 119, 87, 0.08)" stroke="#d97757" strokeWidth="1" />
-              <text x="24" y="26" fill="#d97757" fontFamily="var(--font-anthropic-mono)" fontSize="10" fontWeight="600">PARALLEL CDC DIRECTORY HOOK</text>
+              <circle cx="20" cy="22" r="3" fill="#d97757" className="pulse-dot" />
+              <text x="30" y="26" fill="#d97757" fontFamily="var(--font-anthropic-mono)" fontSize="10" fontWeight="600">PARALLEL CDC DIRECTORY HOOK</text>
               <text x="24" y="46" fill="#faf9f5" fontFamily="var(--font-anthropic-sans)" fontSize="11.5">
                 Live event-driven directory sync hooks forward real-time updates to preserve 100% data consistency
               </text>
             </g>
 
-            {/* Vertical Sync Connectors */}
-            <line x1="120" y1="120" x2="120" y2="155" stroke="#87867f" strokeWidth="1" strokeDasharray="2 2" />
-            <line x1="635" y1="120" x2="635" y2="155" stroke="#87867f" strokeWidth="1" strokeDasharray="2 2" />
+            {/* Vertical Sync Connectors with Animated Flow */}
+            <line x1="120" y1="120" x2="120" y2="155" stroke="#d97757" strokeWidth="1.5" strokeDasharray="3 3" className="flow-dash-down" />
+            <line x1="635" y1="120" x2="635" y2="155" stroke="#d97757" strokeWidth="1.5" strokeDasharray="3 3" className="flow-dash-down" />
           </svg>
         );
 
@@ -140,42 +159,82 @@ export const VisualPDFCarousel: React.FC<VisualPDFCarouselProps> = ({
         return (
           <svg viewBox="0 0 760 260" className="w-full h-auto" style={{ width: '100%', height: 'auto', maxHeight: '240px' }}>
             <rect width="760" height="260" rx="12" fill="#141413" />
-            <g transform="translate(35, 45)">
+            <defs>
+              <pattern id="diag-grid-2" width="24" height="24" patternUnits="userSpaceOnUse">
+                <path d="M 24 0 L 0 0 0 24" fill="none" stroke="rgba(255, 255, 255, 0.04)" strokeWidth="1" />
+              </pattern>
+            </defs>
+            <rect width="760" height="260" fill="url(#diag-grid-2)" rx="12" />
+
+            {/* Stage 1: Kafka MSK */}
+            <g transform="translate(35, 45)" className="diag-node">
               <rect width="135" height="75" rx="8" fill="#1e1e1d" stroke="#3d3d3a" strokeWidth="1" />
-              <text x="12" y="24" fill="#87867f" fontFamily="var(--font-anthropic-mono)" fontSize="10">EVENT SOURCE</text>
+              <circle cx="18" cy="20" r="3" fill="#87867f" />
+              <text x="26" y="24" fill="#87867f" fontFamily="var(--font-anthropic-mono)" fontSize="10">EVENT SOURCE</text>
               <text x="12" y="44" fill="#faf9f5" fontFamily="var(--font-anthropic-sans)" fontSize="13" fontWeight="600">Kafka MSK</text>
               <text x="12" y="60" fill="#b0aea5" fontFamily="var(--font-anthropic-sans)" fontSize="11">Partition Stream</text>
             </g>
-            <line x1="170" y1="82" x2="225" y2="82" stroke="#d97757" strokeWidth="2" />
-            <polygon points="225,82 217,77 217,87" fill="#d97757" />
 
-            <g transform="translate(225, 45)">
+            {/* Stream 1 to Lambda */}
+            <line x1="170" y1="82" x2="225" y2="82" stroke="#d97757" strokeWidth="2" strokeDasharray="5 3" className="flow-dash-fast" />
+            <polygon points="225,82 217,77 217,87" fill="#d97757" />
+            
+            {/* Animated Packet */}
+            <circle cx="170" cy="82" r="3.5" fill="#faf9f5" filter="drop-shadow(0 0 4px #d97757)">
+              <animate attributeName="cx" values="170;225" dur="1.4s" repeatCount="indefinite" />
+              <animate attributeName="opacity" values="0;1;1;0" dur="1.4s" repeatCount="indefinite" />
+            </circle>
+
+            {/* Stage 2: AWS Lambda Protobuf Parser */}
+            <g transform="translate(225, 45)" className="diag-node">
               <rect width="165" height="75" rx="8" fill="#1e1e1d" stroke="#d97757" strokeWidth="1.5" />
-              <text x="12" y="24" fill="#d97757" fontFamily="var(--font-anthropic-mono)" fontSize="10">AWS LAMBDA</text>
+              <circle cx="18" cy="20" r="3" fill="#d97757" className="pulse-dot" />
+              <circle cx="18" cy="20" r="6" fill="none" stroke="#d97757" strokeWidth="1" opacity="0.6">
+                <animate attributeName="r" values="3;9" dur="1.8s" repeatCount="indefinite" />
+                <animate attributeName="opacity" values="0.8;0" dur="1.8s" repeatCount="indefinite" />
+              </circle>
+              <text x="26" y="24" fill="#d97757" fontFamily="var(--font-anthropic-mono)" fontSize="10">AWS LAMBDA</text>
               <text x="12" y="44" fill="#faf9f5" fontFamily="var(--font-anthropic-sans)" fontSize="13" fontWeight="600">Protobuf Parser</text>
               <text x="12" y="60" fill="#b0aea5" fontFamily="var(--font-anthropic-sans)" fontSize="11">Idempotent Router</text>
             </g>
-            <line x1="390" y1="82" x2="445" y2="82" stroke="#faf9f5" strokeWidth="2" />
-            <polygon points="445,82 437,77 437,87" fill="#faf9f5" />
 
-            <g transform="translate(445, 45)">
+            {/* Stream 2 to Sync Targets */}
+            <line x1="390" y1="82" x2="445" y2="82" stroke="#faf9f5" strokeWidth="2" strokeDasharray="5 3" className="flow-dash-fast" />
+            <polygon points="445,82 437,77 437,87" fill="#faf9f5" />
+            
+            {/* Animated Packet */}
+            <circle cx="390" cy="82" r="3.5" fill="#d97757" filter="drop-shadow(0 0 4px #faf9f5)">
+              <animate attributeName="cx" values="390;445" dur="1.4s" begin="0.7s" repeatCount="indefinite" />
+              <animate attributeName="opacity" values="0;1;1;0" dur="1.4s" begin="0.7s" repeatCount="indefinite" />
+            </circle>
+
+            {/* Stage 3: Sync Targets */}
+            <g transform="translate(445, 45)" className="diag-node">
               <rect width="145" height="75" rx="8" fill="#1e1e1d" stroke="#3d3d3a" strokeWidth="1" />
-              <text x="12" y="24" fill="#87867f" fontFamily="var(--font-anthropic-mono)" fontSize="10">SYNC TARGETS</text>
+              <circle cx="18" cy="20" r="3" fill="#87867f" />
+              <text x="26" y="24" fill="#87867f" fontFamily="var(--font-anthropic-mono)" fontSize="10">SYNC TARGETS</text>
               <text x="12" y="44" fill="#faf9f5" fontFamily="var(--font-anthropic-sans)" fontSize="13" fontWeight="600">B2B CRM & Ledger</text>
               <text x="12" y="60" fill="#b0aea5" fontFamily="var(--font-anthropic-sans)" fontSize="11">DynamoDB Store</text>
             </g>
 
+            {/* DLQ Isolation Stream */}
+            <line x1="545" y1="82" x2="605" y2="82" stroke="#e07a5f" strokeWidth="1.5" strokeDasharray="3 3" className="flow-dash-fast" />
+            <polygon points="605,82 597,78 597,86" fill="#e07a5f" />
+
             {/* DLQ Handler */}
-            <g transform="translate(605, 45)">
+            <g transform="translate(605, 45)" className="diag-node">
               <rect width="120" height="75" rx="8" fill="#1e1e1d" stroke="#87867f" strokeWidth="1" strokeDasharray="3 3" />
-              <text x="12" y="24" fill="#87867f" fontFamily="var(--font-anthropic-mono)" fontSize="10">ISOLATION</text>
+              <circle cx="18" cy="20" r="3" fill="#e07a5f" className="pulse-dot" />
+              <text x="26" y="24" fill="#87867f" fontFamily="var(--font-anthropic-mono)" fontSize="10">ISOLATION</text>
               <text x="12" y="44" fill="#faf9f5" fontFamily="var(--font-anthropic-sans)" fontSize="13" fontWeight="600">SQS DLQ</text>
               <text x="12" y="60" fill="#b0aea5" fontFamily="var(--font-anthropic-sans)" fontSize="11">Alert Telemetry</text>
             </g>
 
-            <g transform="translate(35, 155)">
+            {/* Lower Failure Isolation & Retry Box */}
+            <g transform="translate(35, 155)" className="diag-node">
               <rect width="690" height="65" rx="8" fill="rgba(217, 119, 87, 0.08)" stroke="#d97757" strokeWidth="1" />
-              <text x="24" y="26" fill="#d97757" fontFamily="var(--font-anthropic-mono)" fontSize="10" fontWeight="600">FAILURE ISOLATION & RETRY</text>
+              <circle cx="20" cy="22" r="3" fill="#d97757" className="pulse-dot" />
+              <text x="30" y="26" fill="#d97757" fontFamily="var(--font-anthropic-mono)" fontSize="10" fontWeight="600">FAILURE ISOLATION & RETRY</text>
               <text x="24" y="46" fill="#faf9f5" fontFamily="var(--font-anthropic-sans)" fontSize="11.5">
                 Automated DLQ routing with exponential backoff retries and Coralogix distributed tracing
               </text>
@@ -187,36 +246,69 @@ export const VisualPDFCarousel: React.FC<VisualPDFCarouselProps> = ({
         return (
           <svg viewBox="0 0 760 260" className="w-full h-auto" style={{ width: '100%', height: 'auto', maxHeight: '240px' }}>
             <rect width="760" height="260" rx="12" fill="#141413" />
-            <g transform="translate(40, 45)">
+            <defs>
+              <pattern id="diag-grid-3" width="24" height="24" patternUnits="userSpaceOnUse">
+                <path d="M 24 0 L 0 0 0 24" fill="none" stroke="rgba(255, 255, 255, 0.04)" strokeWidth="1" />
+              </pattern>
+            </defs>
+            <rect width="760" height="260" fill="url(#diag-grid-3)" rx="12" />
+
+            {/* Stage 1: Input Event */}
+            <g transform="translate(40, 45)" className="diag-node">
               <rect width="160" height="75" rx="8" fill="#1e1e1d" stroke="#3d3d3a" strokeWidth="1" />
-              <text x="12" y="24" fill="#87867f" fontFamily="var(--font-anthropic-mono)" fontSize="10">INPUT EVENT</text>
+              <circle cx="18" cy="20" r="3" fill="#87867f" />
+              <text x="26" y="24" fill="#87867f" fontFamily="var(--font-anthropic-mono)" fontSize="10">INPUT EVENT</text>
               <text x="12" y="44" fill="#faf9f5" fontFamily="var(--font-anthropic-sans)" fontSize="13" fontWeight="600">Soft-Cancel Flow</text>
               <text x="12" y="60" fill="#b0aea5" fontFamily="var(--font-anthropic-sans)" fontSize="11">B2B Account Event</text>
             </g>
-            <line x1="200" y1="82" x2="285" y2="82" stroke="#d97757" strokeWidth="2" />
+
+            {/* Connection Flow 1: Evaluate Stream & Packet */}
+            <line x1="200" y1="82" x2="285" y2="82" stroke="#d97757" strokeWidth="2" strokeDasharray="5 3" className="flow-dash-fast" />
             <polygon points="285,82 277,77 277,87" fill="#d97757" />
             <text x="242" y="72" fill="#d97757" fontFamily="var(--font-anthropic-mono)" fontSize="9.5" textAnchor="middle">EVALUATE</text>
+            
+            <circle cx="200" cy="82" r="3.5" fill="#faf9f5" filter="drop-shadow(0 0 4px #d97757)">
+              <animate attributeName="cx" values="200;285" dur="1.5s" repeatCount="indefinite" />
+              <animate attributeName="opacity" values="0;1;1;0" dur="1.5s" repeatCount="indefinite" />
+            </circle>
 
-            <g transform="translate(285, 45)">
+            {/* Stage 2: NestJS Rule Engine */}
+            <g transform="translate(285, 45)" className="diag-node">
               <rect width="190" height="75" rx="8" fill="#1e1e1d" stroke="#d97757" strokeWidth="1.5" />
-              <text x="12" y="24" fill="#d97757" fontFamily="var(--font-anthropic-mono)" fontSize="10">NESTJS EVALUATION</text>
+              <circle cx="18" cy="20" r="3" fill="#d97757" className="pulse-dot" />
+              <circle cx="18" cy="20" r="6" fill="none" stroke="#d97757" strokeWidth="1" opacity="0.6">
+                <animate attributeName="r" values="3;9" dur="1.8s" repeatCount="indefinite" />
+                <animate attributeName="opacity" values="0.8;0" dur="1.8s" repeatCount="indefinite" />
+              </circle>
+              <text x="26" y="24" fill="#d97757" fontFamily="var(--font-anthropic-mono)" fontSize="10">NESTJS EVALUATION</text>
               <text x="12" y="44" fill="#faf9f5" fontFamily="var(--font-anthropic-sans)" fontSize="13" fontWeight="600">Segment Rule Engine</text>
               <text x="12" y="60" fill="#b0aea5" fontFamily="var(--font-anthropic-sans)" fontSize="11">Dynamic Weights Matrix</text>
             </g>
-            <line x1="475" y1="82" x2="560" y2="82" stroke="#faf9f5" strokeWidth="2" />
+
+            {/* Connection Flow 2: Persist Stream & Packet */}
+            <line x1="475" y1="82" x2="560" y2="82" stroke="#faf9f5" strokeWidth="2" strokeDasharray="5 3" className="flow-dash-fast" />
             <polygon points="560,82 552,77 552,87" fill="#faf9f5" />
             <text x="517" y="72" fill="#faf9f5" fontFamily="var(--font-anthropic-mono)" fontSize="9.5" textAnchor="middle">PERSIST</text>
 
-            <g transform="translate(560, 45)">
+            <circle cx="475" cy="82" r="3.5" fill="#d97757" filter="drop-shadow(0 0 4px #faf9f5)">
+              <animate attributeName="cx" values="475;560" dur="1.5s" begin="0.75s" repeatCount="indefinite" />
+              <animate attributeName="opacity" values="0;1;1;0" dur="1.5s" begin="0.75s" repeatCount="indefinite" />
+            </circle>
+
+            {/* Stage 3: DynamoDB Persistence */}
+            <g transform="translate(560, 45)" className="diag-node">
               <rect width="160" height="75" rx="8" fill="#1e1e1d" stroke="#3d3d3a" strokeWidth="1" />
-              <text x="12" y="24" fill="#87867f" fontFamily="var(--font-anthropic-mono)" fontSize="10">PERSISTENCE</text>
+              <circle cx="18" cy="20" r="3" fill="#87867f" />
+              <text x="26" y="24" fill="#87867f" fontFamily="var(--font-anthropic-mono)" fontSize="10">PERSISTENCE</text>
               <text x="12" y="44" fill="#faf9f5" fontFamily="var(--font-anthropic-sans)" fontSize="13" fontWeight="600">DynamoDB Rules</text>
               <text x="12" y="60" fill="#b0aea5" fontFamily="var(--font-anthropic-sans)" fontSize="11">Hot-Reload Policy</text>
             </g>
 
-            <g transform="translate(40, 155)">
+            {/* Lower Dynamic Configuration Box */}
+            <g transform="translate(40, 155)" className="diag-node">
               <rect width="680" height="65" rx="8" fill="rgba(217, 119, 87, 0.08)" stroke="#d97757" strokeWidth="1" />
-              <text x="24" y="26" fill="#d97757" fontFamily="var(--font-anthropic-mono)" fontSize="10" fontWeight="600">DYNAMIC CONFIGURATION</text>
+              <circle cx="20" cy="22" r="3" fill="#d97757" className="pulse-dot" />
+              <text x="30" y="26" fill="#d97757" fontFamily="var(--font-anthropic-mono)" fontSize="10" fontWeight="600">DYNAMIC CONFIGURATION</text>
               <text x="24" y="46" fill="#faf9f5" fontFamily="var(--font-anthropic-sans)" fontSize="11.5">
                 Offers and segmentation rules matched dynamically without requiring redeployment or downtime
               </text>
@@ -228,48 +320,78 @@ export const VisualPDFCarousel: React.FC<VisualPDFCarouselProps> = ({
         return (
           <svg viewBox="0 0 760 260" className="w-full h-auto" style={{ width: '100%', height: 'auto', maxHeight: '240px' }}>
             <rect width="760" height="260" rx="12" fill="#141413" />
-            <g transform="translate(30, 45)">
+            <defs>
+              <pattern id="diag-grid-4" width="24" height="24" patternUnits="userSpaceOnUse">
+                <path d="M 24 0 L 0 0 0 24" fill="none" stroke="rgba(255, 255, 255, 0.04)" strokeWidth="1" />
+              </pattern>
+            </defs>
+            <rect width="760" height="260" fill="url(#diag-grid-4)" rx="12" />
+
+            {/* Agent 1 */}
+            <g transform="translate(30, 45)" className="diag-node">
               <rect width="114" height="65" rx="6" fill="#1e1e1d" stroke="#3d3d3a" strokeWidth="1" />
-              <text x="10" y="22" fill="#87867f" fontFamily="var(--font-anthropic-mono)" fontSize="9">AGENT 1</text>
+              <circle cx="16" cy="18" r="2.5" fill="#87867f" />
+              <text x="22" y="22" fill="#87867f" fontFamily="var(--font-anthropic-mono)" fontSize="9">AGENT 1</text>
               <text x="10" y="40" fill="#faf9f5" fontFamily="var(--font-anthropic-sans)" fontSize="12" fontWeight="600">Doc Parser</text>
               <text x="10" y="54" fill="#b0aea5" fontFamily="var(--font-anthropic-sans)" fontSize="10">PDF/DOCX Extr.</text>
             </g>
-            <line x1="144" y1="77" x2="174" y2="77" stroke="#d97757" strokeWidth="1.5" />
+            <line x1="144" y1="77" x2="174" y2="77" stroke="#d97757" strokeWidth="1.5" strokeDasharray="4 2" className="flow-dash-fast" />
 
-            <g transform="translate(174, 45)">
+            {/* Agent 2 */}
+            <g transform="translate(174, 45)" className="diag-node">
               <rect width="114" height="65" rx="6" fill="#1e1e1d" stroke="#3d3d3a" strokeWidth="1" />
-              <text x="10" y="22" fill="#87867f" fontFamily="var(--font-anthropic-mono)" fontSize="9">AGENT 2</text>
+              <circle cx="16" cy="18" r="2.5" fill="#87867f" />
+              <text x="22" y="22" fill="#87867f" fontFamily="var(--font-anthropic-mono)" fontSize="9">AGENT 2</text>
               <text x="10" y="40" fill="#faf9f5" fontFamily="var(--font-anthropic-sans)" fontSize="12" fontWeight="600">Gap Analyzer</text>
               <text x="10" y="54" fill="#b0aea5" fontFamily="var(--font-anthropic-sans)" fontSize="10">JD Match Score</text>
             </g>
-            <line x1="288" y1="77" x2="318" y2="77" stroke="#d97757" strokeWidth="1.5" />
+            <line x1="288" y1="77" x2="318" y2="77" stroke="#d97757" strokeWidth="1.5" strokeDasharray="4 2" className="flow-dash-fast" />
 
-            <g transform="translate(318, 45)">
+            {/* Agent 3 (Core Highlighted) */}
+            <g transform="translate(318, 45)" className="diag-node">
               <rect width="114" height="65" rx="6" fill="#1e1e1d" stroke="#d97757" strokeWidth="1.5" />
-              <text x="10" y="22" fill="#d97757" fontFamily="var(--font-anthropic-mono)" fontSize="9">AGENT 3</text>
+              <circle cx="16" cy="18" r="2.5" fill="#d97757" className="pulse-dot" />
+              <text x="22" y="22" fill="#d97757" fontFamily="var(--font-anthropic-mono)" fontSize="9">AGENT 3</text>
               <text x="10" y="40" fill="#faf9f5" fontFamily="var(--font-anthropic-sans)" fontSize="12" fontWeight="600">Bullet Rewriter</text>
               <text x="10" y="54" fill="#b0aea5" fontFamily="var(--font-anthropic-sans)" fontSize="10">LLM Router</text>
             </g>
-            <line x1="432" y1="77" x2="462" y2="77" stroke="#faf9f5" strokeWidth="1.5" />
+            <line x1="432" y1="77" x2="462" y2="77" stroke="#faf9f5" strokeWidth="1.5" strokeDasharray="4 2" className="flow-dash-fast" />
 
-            <g transform="translate(462, 45)">
+            {/* Agent 4 & 5 */}
+            <g transform="translate(462, 45)" className="diag-node">
               <rect width="114" height="65" rx="6" fill="#1e1e1d" stroke="#3d3d3a" strokeWidth="1" />
-              <text x="10" y="22" fill="#87867f" fontFamily="var(--font-anthropic-mono)" fontSize="9">AGENT 4 & 5</text>
+              <circle cx="16" cy="18" r="2.5" fill="#87867f" />
+              <text x="22" y="22" fill="#87867f" fontFamily="var(--font-anthropic-mono)" fontSize="9">AGENT 4 & 5</text>
               <text x="10" y="40" fill="#faf9f5" fontFamily="var(--font-anthropic-sans)" fontSize="12" fontWeight="600">Prep & Letters</text>
               <text x="10" y="54" fill="#b0aea5" fontFamily="var(--font-anthropic-sans)" fontSize="10">Tailored Out</text>
             </g>
-            <line x1="576" y1="77" x2="606" y2="77" stroke="#d97757" strokeWidth="1.5" />
+            <line x1="576" y1="77" x2="606" y2="77" stroke="#d97757" strokeWidth="1.5" strokeDasharray="4 2" className="flow-dash-fast" />
 
-            <g transform="translate(606, 45)">
+            {/* Delivery (Live SSE Stream Emitting Waves) */}
+            <g transform="translate(606, 45)" className="diag-node">
               <rect width="124" height="65" rx="6" fill="#1e1e1d" stroke="#d97757" strokeWidth="1.5" />
-              <text x="10" y="22" fill="#d97757" fontFamily="var(--font-anthropic-mono)" fontSize="9">DELIVERY</text>
+              <circle cx="16" cy="18" r="2.5" fill="#d97757" className="pulse-dot" />
+              {/* Emitting SSE Waves */}
+              <circle cx="16" cy="18" r="5" fill="none" stroke="#d97757" strokeWidth="1" opacity="0.6">
+                <animate attributeName="r" values="3;10" dur="1.6s" repeatCount="indefinite" />
+                <animate attributeName="opacity" values="0.8;0" dur="1.6s" repeatCount="indefinite" />
+              </circle>
+              <text x="22" y="22" fill="#d97757" fontFamily="var(--font-anthropic-mono)" fontSize="9">DELIVERY</text>
               <text x="10" y="40" fill="#faf9f5" fontFamily="var(--font-anthropic-sans)" fontSize="12" fontWeight="600">SSE Stream</text>
               <text x="10" y="54" fill="#b0aea5" fontFamily="var(--font-anthropic-sans)" fontSize="10">Sub-sec Latency</text>
             </g>
 
-            <g transform="translate(40, 155)">
+            {/* Traveling Data Packet Across All Stages */}
+            <circle cx="30" cy="77" r="3" fill="#d97757" filter="drop-shadow(0 0 4px #faf9f5)">
+              <animate attributeName="cx" values="30;144;288;432;576;668" dur="3s" repeatCount="indefinite" />
+              <animate attributeName="opacity" values="0;1;1;1;1;0" dur="3s" repeatCount="indefinite" />
+            </circle>
+
+            {/* Lower Cost Optimizer Box */}
+            <g transform="translate(40, 155)" className="diag-node">
               <rect width="680" height="65" rx="8" fill="rgba(217, 119, 87, 0.08)" stroke="#d97757" strokeWidth="1" />
-              <text x="24" y="26" fill="#d97757" fontFamily="var(--font-anthropic-mono)" fontSize="10" fontWeight="600">COST & QUALITY OPTIMIZER</text>
+              <circle cx="20" cy="22" r="3" fill="#d97757" className="pulse-dot" />
+              <text x="30" y="26" fill="#d97757" fontFamily="var(--font-anthropic-mono)" fontSize="10" fontWeight="600">COST & QUALITY OPTIMIZER</text>
               <text x="24" y="46" fill="#faf9f5" fontFamily="var(--font-anthropic-sans)" fontSize="11.5">
                 Dynamic load routing balances high-capability and low-cost provider tiers per request stage
               </text>
@@ -282,34 +404,67 @@ export const VisualPDFCarousel: React.FC<VisualPDFCarouselProps> = ({
         return (
           <svg viewBox="0 0 760 260" className="w-full h-auto" style={{ width: '100%', height: 'auto', maxHeight: '240px' }}>
             <rect width="760" height="260" rx="12" fill="#141413" />
-            <g transform="translate(40, 45)">
+            <defs>
+              <pattern id="diag-grid-5" width="24" height="24" patternUnits="userSpaceOnUse">
+                <path d="M 24 0 L 0 0 0 24" fill="none" stroke="rgba(255, 255, 255, 0.04)" strokeWidth="1" />
+              </pattern>
+            </defs>
+            <rect width="760" height="260" fill="url(#diag-grid-5)" rx="12" />
+
+            {/* Edge Layer */}
+            <g transform="translate(40, 45)" className="diag-node">
               <rect width="160" height="75" rx="8" fill="#1e1e1d" stroke="#3d3d3a" strokeWidth="1" />
-              <text x="14" y="24" fill="#87867f" fontFamily="var(--font-anthropic-mono)" fontSize="10">EDGE LAYER</text>
+              <circle cx="18" cy="20" r="3" fill="#87867f" />
+              <text x="26" y="24" fill="#87867f" fontFamily="var(--font-anthropic-mono)" fontSize="10">EDGE LAYER</text>
               <text x="14" y="44" fill="#faf9f5" fontFamily="var(--font-anthropic-sans)" fontSize="13" fontWeight="600">API Gateway</text>
               <text x="14" y="60" fill="#b0aea5" fontFamily="var(--font-anthropic-sans)" fontSize="11">Token Rate Limiting</text>
             </g>
-            <line x1="200" y1="82" x2="285" y2="82" stroke="#d97757" strokeWidth="2" />
+
+            {/* Flow to Mesh */}
+            <line x1="200" y1="82" x2="285" y2="82" stroke="#d97757" strokeWidth="2" strokeDasharray="5 3" className="flow-dash-fast" />
             <polygon points="285,82 277,77 277,87" fill="#d97757" />
 
-            <g transform="translate(285, 45)">
+            <circle cx="200" cy="82" r="3.5" fill="#faf9f5" filter="drop-shadow(0 0 4px #d97757)">
+              <animate attributeName="cx" values="200;285" dur="1.6s" repeatCount="indefinite" />
+              <animate attributeName="opacity" values="0;1;1;0" dur="1.6s" repeatCount="indefinite" />
+            </circle>
+
+            {/* Microservice Mesh */}
+            <g transform="translate(285, 45)" className="diag-node">
               <rect width="190" height="75" rx="8" fill="#1e1e1d" stroke="#d97757" strokeWidth="1.5" />
-              <text x="14" y="24" fill="#d97757" fontFamily="var(--font-anthropic-mono)" fontSize="10">CORE SERVICES</text>
+              <circle cx="18" cy="20" r="3" fill="#d97757" className="pulse-dot" />
+              <circle cx="18" cy="20" r="6" fill="none" stroke="#d97757" strokeWidth="1" opacity="0.6">
+                <animate attributeName="r" values="3;9" dur="1.8s" repeatCount="indefinite" />
+                <animate attributeName="opacity" values="0.8;0" dur="1.8s" repeatCount="indefinite" />
+              </circle>
+              <text x="26" y="24" fill="#d97757" fontFamily="var(--font-anthropic-mono)" fontSize="10">CORE SERVICES</text>
               <text x="14" y="44" fill="#faf9f5" fontFamily="var(--font-anthropic-sans)" fontSize="13" fontWeight="600">Microservice Mesh</text>
               <text x="14" y="60" fill="#b0aea5" fontFamily="var(--font-anthropic-sans)" fontSize="11">Circuit Breakers & Retries</text>
             </g>
-            <line x1="475" y1="82" x2="560" y2="82" stroke="#faf9f5" strokeWidth="2" />
+
+            {/* Flow to Observability */}
+            <line x1="475" y1="82" x2="560" y2="82" stroke="#faf9f5" strokeWidth="2" strokeDasharray="5 3" className="flow-dash-fast" />
             <polygon points="560,82 552,77 552,87" fill="#faf9f5" />
 
-            <g transform="translate(560, 45)">
+            <circle cx="475" cy="82" r="3.5" fill="#d97757" filter="drop-shadow(0 0 4px #faf9f5)">
+              <animate attributeName="cx" values="475;560" dur="1.6s" begin="0.8s" repeatCount="indefinite" />
+              <animate attributeName="opacity" values="0;1;1;0" dur="1.6s" begin="0.8s" repeatCount="indefinite" />
+            </circle>
+
+            {/* Observability */}
+            <g transform="translate(560, 45)" className="diag-node">
               <rect width="160" height="75" rx="8" fill="#1e1e1d" stroke="#3d3d3a" strokeWidth="1" />
-              <text x="14" y="24" fill="#87867f" fontFamily="var(--font-anthropic-mono)" fontSize="10">OBSERVABILITY</text>
+              <circle cx="18" cy="20" r="3" fill="#87867f" />
+              <text x="26" y="24" fill="#87867f" fontFamily="var(--font-anthropic-mono)" fontSize="10">OBSERVABILITY</text>
               <text x="14" y="44" fill="#faf9f5" fontFamily="var(--font-anthropic-sans)" fontSize="13" fontWeight="600">Coralogix & Traces</text>
               <text x="14" y="60" fill="#b0aea5" fontFamily="var(--font-anthropic-sans)" fontSize="11">CloudWatch Telemetry</text>
             </g>
 
-            <g transform="translate(40, 155)">
+            {/* Lower Distributed Context Box */}
+            <g transform="translate(40, 155)" className="diag-node">
               <rect width="680" height="65" rx="8" fill="rgba(217, 119, 87, 0.08)" stroke="#d97757" strokeWidth="1" />
-              <text x="24" y="26" fill="#d97757" fontFamily="var(--font-anthropic-mono)" fontSize="10" fontWeight="600">DISTRIBUTED CONTEXT PROPAGATION</text>
+              <circle cx="20" cy="22" r="3" fill="#d97757" className="pulse-dot" />
+              <text x="30" y="26" fill="#d97757" fontFamily="var(--font-anthropic-mono)" fontSize="10" fontWeight="600">DISTRIBUTED CONTEXT PROPAGATION</text>
               <text x="24" y="46" fill="#faf9f5" fontFamily="var(--font-anthropic-sans)" fontSize="11.5">
                 Standardized correlation IDs injected at API Gateway propagate across the full microservice mesh
               </text>
@@ -338,6 +493,73 @@ export const VisualPDFCarousel: React.FC<VisualPDFCarouselProps> = ({
         outline: 'none',
       }}
     >
+      {/* Embedded CSS Animations for High-Performance SVG Flows & Smooth Slide Transitions */}
+      <style>{`
+        @keyframes flowDashFast {
+          from {
+            stroke-dashoffset: 20;
+          }
+          to {
+            stroke-dashoffset: 0;
+          }
+        }
+        @keyframes flowDashDown {
+          from {
+            stroke-dashoffset: 12;
+          }
+          to {
+            stroke-dashoffset: 0;
+          }
+        }
+        @keyframes pulseBeacon {
+          0%, 100% {
+            transform: scale(1);
+            opacity: 0.9;
+          }
+          50% {
+            transform: scale(1.3);
+            opacity: 0.4;
+          }
+        }
+        @keyframes slideContentEnter {
+          from {
+            opacity: 0;
+            transform: translateY(12px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .flow-dash-fast {
+          animation: flowDashFast 1s linear infinite;
+        }
+        .flow-dash-down {
+          animation: flowDashDown 1.2s linear infinite;
+        }
+        .pulse-dot {
+          transform-origin: center;
+          animation: pulseBeacon 2s ease-in-out infinite;
+        }
+        .slide-motion-enter {
+          animation: slideContentEnter 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .diag-node {
+          transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease;
+        }
+        .diag-node:hover {
+          filter: drop-shadow(0 2px 8px rgba(217, 119, 87, 0.25));
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .flow-dash-fast,
+          .flow-dash-down,
+          .pulse-dot,
+          .slide-motion-enter {
+            animation: none !important;
+          }
+        }
+      `}</style>
+
       {/* Editorial Slide Stage Card */}
       <div
         style={{
@@ -448,8 +670,12 @@ export const VisualPDFCarousel: React.FC<VisualPDFCarouselProps> = ({
           </div>
         </div>
 
-        {/* Main Slide Presentation Viewport */}
-        <div style={{ padding: 'clamp(24px, 4vw, 40px)' }}>
+        {/* Main Slide Presentation Viewport with Smooth Motion Transition */}
+        <div
+          key={currentIndex}
+          className="slide-motion-enter"
+          style={{ padding: 'clamp(24px, 4vw, 40px)' }}
+        >
           {/* Slide Heading & Narrative */}
           <div style={{ marginBottom: 'var(--spacing-24)' }}>
             <h3
@@ -479,15 +705,16 @@ export const VisualPDFCarousel: React.FC<VisualPDFCarouselProps> = ({
             </p>
           </div>
 
-          {/* Architectural Vector Canvas */}
+          {/* Architectural Vector Canvas with Subtle Ambient Glow */}
           <div
             style={{
               backgroundColor: '#141413',
               borderRadius: '16px',
               padding: 'var(--spacing-16)',
               border: '1px solid rgba(255, 255, 255, 0.08)',
-              boxShadow: 'inset 0 2px 10px rgba(0, 0, 0, 0.5)',
+              boxShadow: 'inset 0 2px 10px rgba(0, 0, 0, 0.5), 0 8px 24px -10px rgba(20, 20, 19, 0.2)',
               marginBottom: 'var(--spacing-24)',
+              overflow: 'hidden',
             }}
           >
             {renderSlideDiagram(currentSlide.diagramType)}
