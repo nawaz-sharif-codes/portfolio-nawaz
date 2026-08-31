@@ -135,7 +135,7 @@ export const GreetingScreen: React.FC<GreetingScreenProps> = ({ onComplete }) =>
         position: 'fixed',
         inset: 0,
         zIndex: 99999,
-        backgroundColor: '#141413',
+        backgroundColor: '#000000',
         color: '#faf9f5',
         display: 'flex',
         flexDirection: 'column',
@@ -156,13 +156,13 @@ export const GreetingScreen: React.FC<GreetingScreenProps> = ({ onComplete }) =>
         }
       }}
     >
-      {/* Background Subtle Noise and Vignette */}
+      {/* Background Pure Black Deep Stage with Soft Focus Light */}
       <div
         style={{
           position: 'absolute',
           inset: 0,
           background:
-            'radial-gradient(circle at 50% 50%, rgba(217, 119, 87, 0.08) 0%, rgba(20, 20, 19, 0.98) 70%, #141413 100%)',
+            'radial-gradient(circle at 50% 50%, rgba(217, 119, 87, 0.09) 0%, rgba(0, 0, 0, 0.95) 60%, #000000 100%)',
           pointerEvents: 'none',
         }}
       />
