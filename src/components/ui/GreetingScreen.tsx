@@ -15,7 +15,7 @@ const GREETINGS: GreetingItem[] = [
   { text: 'Hola', lang: 'Spanish', code: 'ES' },
   { text: 'こんにちは', lang: 'Japanese', code: 'JA' },
   { text: 'مرحباً', lang: 'Arabic', code: 'AR' },
-  { text: 'Nawaz Sharif', lang: 'Software Engineer @ DAZN', code: 'DAZN', isName: true },
+  { text: 'NAWAZ SHARIF', lang: 'Software Engineer @ DAZN', code: 'DAZN', isName: true },
 ];
 
 interface GreetingScreenProps {
@@ -25,6 +25,7 @@ interface GreetingScreenProps {
 export const GreetingScreen: React.FC<GreetingScreenProps> = ({ onComplete }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isExiting, setIsExiting] = useState(false);
+  const [isNetflixZooming, setIsNetflixZooming] = useState(false);
   const [shouldRender, setShouldRender] = useState(() => {
     if (typeof window === 'undefined') return false;
     try {
@@ -40,11 +41,12 @@ export const GreetingScreen: React.FC<GreetingScreenProps> = ({ onComplete }) =>
     try {
       sessionStorage.setItem('hasSeenGreeting', 'true');
     } catch {}
+    setIsNetflixZooming(true);
     setIsExiting(true);
     setTimeout(() => {
       setShouldRender(false);
       onComplete?.();
-    }, 750);
+    }, 900);
   }, [onComplete]);
 
   useEffect(() => {
@@ -58,16 +60,6 @@ export const GreetingScreen: React.FC<GreetingScreenProps> = ({ onComplete }) =>
     } catch {}
 
     if (hasSeen && !forceGreeting) {
-      setShouldRender(false);
-      return;
-    }
-
-    // Check prefers-reduced-motion
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion && !forceGreeting) {
-      try {
-        sessionStorage.setItem('hasSeenGreeting', 'true');
-      } catch {}
       setShouldRender(false);
       return;
     }
@@ -105,12 +97,16 @@ export const GreetingScreen: React.FC<GreetingScreenProps> = ({ onComplete }) =>
     }
 
     const isLastName = currentIndex === GREETINGS.length - 1;
-    // Step timing: ~280ms for international greetings, ~950ms for Nawaz signature resolution
-    const duration = isLastName ? 950 : 280;
+    // Step timing: ~280ms for international greetings
+    // When reaching Nawaz Sharif name: pause for 650ms then trigger Netflix zoom
+    const duration = isLastName ? 700 : 280;
 
     const timer = setTimeout(() => {
       if (isLastName) {
-        completeGreeting();
+        setIsNetflixZooming(true);
+        setTimeout(() => {
+          completeGreeting();
+        }, 150);
       } else {
         setCurrentIndex((prev) => prev + 1);
       }
@@ -122,6 +118,7 @@ export const GreetingScreen: React.FC<GreetingScreenProps> = ({ onComplete }) =>
   if (!shouldRender) return null;
 
   const currentGreeting = GREETINGS[currentIndex];
+  const isLastName = currentGreeting.isName;
 
   return (
     <div
@@ -141,9 +138,10 @@ export const GreetingScreen: React.FC<GreetingScreenProps> = ({ onComplete }) =>
         justifyContent: 'center',
         overflow: 'hidden',
         cursor: 'pointer',
-        transition: 'transform 0.75s cubic-bezier(0.76, 0, 0.24, 1), opacity 0.75s cubic-bezier(0.76, 0, 0.24, 1)',
-        transform: isExiting ? 'translateY(-100%)' : 'translateY(0)',
-        opacity: isExiting ? 0.98 : 1,
+        perspective: '1000px',
+        transition: 'opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1)',
+        opacity: isExiting ? 0 : 1,
+        pointerEvents: isExiting ? 'none' : 'auto',
       }}
       onClick={() => {
         const urlParams = new URLSearchParams(window.location.search);
@@ -160,8 +158,10 @@ export const GreetingScreen: React.FC<GreetingScreenProps> = ({ onComplete }) =>
           position: 'absolute',
           inset: 0,
           background:
-            'radial-gradient(circle at 50% 50%, rgba(217, 119, 87, 0.09) 0%, rgba(0, 0, 0, 0.95) 60%, #000000 100%)',
+            'radial-gradient(circle at 50% 50%, rgba(217, 119, 87, 0.12) 0%, rgba(0, 0, 0, 0.95) 55%, #000000 100%)',
           pointerEvents: 'none',
+          transition: 'opacity 0.6s ease',
+          opacity: isNetflixZooming ? 0.4 : 1,
         }}
       />
 
@@ -180,6 +180,8 @@ export const GreetingScreen: React.FC<GreetingScreenProps> = ({ onComplete }) =>
           color: '#87867f',
           letterSpacing: '0.08em',
           textTransform: 'uppercase',
+          transition: 'opacity 0.3s ease',
+          opacity: isNetflixZooming ? 0 : 1,
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -239,37 +241,44 @@ export const GreetingScreen: React.FC<GreetingScreenProps> = ({ onComplete }) =>
           justifyContent: 'center',
           textAlign: 'center',
           padding: '0 24px',
-          maxWidth: '900px',
+          maxWidth: '1000px',
+          transformStyle: 'preserve-3d',
         }}
       >
         {/* Animated Word Container */}
         <div
           key={currentIndex}
+          className={isNetflixZooming ? 'netflix-zoom-target' : ''}
           style={{
             display: 'flex',
-            alignItems: 'baseline',
+            alignItems: 'center',
             justifyContent: 'center',
-            gap: '12px',
-            animation: currentGreeting.isName
-              ? 'nameReveal 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards'
+            gap: isLastName ? '14px' : '12px',
+            transformOrigin: 'center center',
+            animation: isNetflixZooming
+              ? 'netflixZoomIntoCamera 0.9s cubic-bezier(0.2, 0, 0.1, 1) forwards'
+              : isLastName
+              ? 'nameReveal 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards'
               : 'wordSlideIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards',
           }}
         >
           <h1
             style={{
-              fontFamily: currentGreeting.isName
-                ? 'var(--font-anthropic-sans)'
+              fontFamily: isLastName
+                ? 'var(--font-anthropic-display-sans)'
                 : 'var(--font-anthropic-serif)',
-              fontSize: currentGreeting.isName
-                ? 'clamp(38px, 6vw, 68px)'
+              fontSize: isLastName
+                ? 'clamp(36px, 7vw, 76px)'
                 : 'clamp(46px, 8vw, 88px)',
-              fontWeight: currentGreeting.isName ? 700 : 400,
-              letterSpacing: currentGreeting.isName ? '-0.02em' : '-0.01em',
+              fontWeight: isLastName ? 700 : 400,
+              letterSpacing: isLastName ? '0.04em' : '-0.01em',
+              textTransform: isLastName ? 'uppercase' : 'none',
               lineHeight: 1.1,
               color: '#faf9f5',
               margin: 0,
               padding: 0,
               textRendering: 'optimizeLegibility',
+              whiteSpace: 'nowrap',
             }}
           >
             {currentGreeting.text}
@@ -279,12 +288,12 @@ export const GreetingScreen: React.FC<GreetingScreenProps> = ({ onComplete }) =>
           <span
             style={{
               display: 'inline-block',
-              width: currentGreeting.isName ? '12px' : '14px',
-              height: currentGreeting.isName ? '12px' : '14px',
+              width: isLastName ? '14px' : '14px',
+              height: isLastName ? '14px' : '14px',
               borderRadius: '50%',
               backgroundColor: '#d97757',
-              boxShadow: '0 0 16px rgba(217, 119, 87, 0.8)',
-              transform: 'translateY(-2px)',
+              boxShadow: '0 0 18px rgba(217, 119, 87, 0.95)',
+              transform: isLastName ? 'translateY(-3px)' : 'translateY(-2px)',
             }}
           />
         </div>
@@ -293,19 +302,25 @@ export const GreetingScreen: React.FC<GreetingScreenProps> = ({ onComplete }) =>
         <div
           key={`sub-${currentIndex}`}
           style={{
-            marginTop: '20px',
+            marginTop: '22px',
             display: 'flex',
             alignItems: 'center',
             gap: '10px',
-            animation: 'metaFadeIn 0.25s ease-out forwards',
+            animation: isNetflixZooming
+              ? 'metaFadeOut 0.2s ease-in forwards'
+              : 'metaFadeIn 0.25s ease-out forwards',
           }}
         >
           <span
             style={{
-              fontFamily: 'var(--font-anthropic-mono)',
-              fontSize: '12px',
-              color: '#87867f',
-              letterSpacing: '0.04em',
+              fontFamily: isLastName
+                ? 'var(--font-anthropic-mono)'
+                : 'var(--font-anthropic-mono)',
+              fontSize: '13px',
+              letterSpacing: isLastName ? '0.08em' : '0.06em',
+              textTransform: isLastName ? 'uppercase' : 'none',
+              color: isLastName ? '#d97757' : '#87867f',
+              fontWeight: isLastName ? 600 : 400,
             }}
           >
             {currentGreeting.lang}
@@ -325,6 +340,8 @@ export const GreetingScreen: React.FC<GreetingScreenProps> = ({ onComplete }) =>
           backgroundColor: 'rgba(255, 255, 255, 0.1)',
           borderRadius: '2px',
           overflow: 'hidden',
+          transition: 'opacity 0.3s ease',
+          opacity: isNetflixZooming ? 0 : 1,
         }}
       >
         <div
@@ -356,13 +373,40 @@ export const GreetingScreen: React.FC<GreetingScreenProps> = ({ onComplete }) =>
         @keyframes nameReveal {
           0% {
             opacity: 0;
-            transform: translateY(28px) scale(0.94);
-            filter: blur(6px);
+            transform: translateY(24px) scale(0.95);
+            filter: blur(4px);
           }
           100% {
             opacity: 1;
             transform: translateY(0) scale(1);
             filter: blur(0);
+          }
+        }
+
+        @keyframes netflixZoomIntoCamera {
+          0% {
+            transform: scale(1) translateZ(0);
+            opacity: 1;
+            filter: blur(0px);
+            letter-spacing: 0.04em;
+          }
+          25% {
+            transform: scale(1.15) translateZ(60px);
+            opacity: 1;
+            filter: blur(0px);
+            letter-spacing: 0.06em;
+          }
+          65% {
+            transform: scale(6.5) translateZ(400px);
+            opacity: 0.85;
+            filter: blur(4px);
+            letter-spacing: 0.18em;
+          }
+          100% {
+            transform: scale(36) translateZ(900px);
+            opacity: 0;
+            filter: blur(20px);
+            letter-spacing: 0.4em;
           }
         }
 
@@ -377,6 +421,17 @@ export const GreetingScreen: React.FC<GreetingScreenProps> = ({ onComplete }) =>
           }
         }
 
+        @keyframes metaFadeOut {
+          0% {
+            opacity: 1;
+            transform: scale(1);
+          }
+          100% {
+            opacity: 0;
+            transform: scale(0.9);
+          }
+        }
+
         @keyframes beaconPulse {
           0%, 100% {
             opacity: 1;
@@ -384,7 +439,7 @@ export const GreetingScreen: React.FC<GreetingScreenProps> = ({ onComplete }) =>
           }
           50% {
             opacity: 0.4;
-            transform: scale(0.75);
+            transform: scale(0.85);
           }
         }
       `}</style>

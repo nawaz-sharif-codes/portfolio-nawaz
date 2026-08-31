@@ -29,6 +29,8 @@ interface CareerRole {
   technologies: string[];
 }
 
+import { NawazProfileCard } from '../ui/NawazProfileCard';
+
 export const ProvenanceSection: React.FC = () => {
   const careerRoles: CareerRole[] = [
     {
@@ -153,72 +155,121 @@ export const ProvenanceSection: React.FC = () => {
       }}
     >
       <div className="site-container">
-        {/* Section Header */}
-        <div style={{ marginBottom: 'var(--spacing-32)' }}>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              marginBottom: 'var(--spacing-8)',
-            }}
-          >
-            <span
+        {/* Section Header with Profile Card Spotlight */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+            gap: 'var(--spacing-32)',
+            alignItems: 'center',
+            marginBottom: 'var(--spacing-40)',
+          }}
+        >
+          <div>
+            <div
               style={{
-                fontFamily: 'var(--font-anthropic-sans)',
-                fontSize: 'var(--text-caption)',
-                fontWeight: 'var(--font-weight-semibold)',
-                letterSpacing: '0.08em',
-                textTransform: 'uppercase',
-                color: 'var(--color-cloud-dark)',
-              }}
-            >
-              Provenance & Career Record
-            </span>
-            <span
-              style={{
-                display: 'inline-flex',
+                display: 'flex',
                 alignItems: 'center',
-                gap: '4px',
-                padding: '2px 8px',
-                borderRadius: '999px',
-                backgroundColor: 'rgba(217, 119, 87, 0.12)',
-                color: 'var(--color-clay)',
-                fontFamily: 'var(--font-anthropic-mono)',
-                fontSize: '11px',
-                fontWeight: 600,
-                letterSpacing: '0.04em',
+                gap: '8px',
+                marginBottom: 'var(--spacing-8)',
               }}
             >
-              <Sparkles size={11} /> 5+ YEARS PRODUCTION ENGINEERING
-            </span>
+              <span
+                style={{
+                  fontFamily: 'var(--font-anthropic-sans)',
+                  fontSize: 'var(--text-caption)',
+                  fontWeight: 'var(--font-weight-semibold)',
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
+                  color: 'var(--color-cloud-dark)',
+                }}
+              >
+                Provenance & Career Record
+              </span>
+              <span
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  padding: '2px 8px',
+                  borderRadius: '999px',
+                  backgroundColor: 'rgba(217, 119, 87, 0.12)',
+                  color: 'var(--color-clay)',
+                  fontFamily: 'var(--font-anthropic-mono)',
+                  fontSize: '11px',
+                  fontWeight: 600,
+                  letterSpacing: '0.04em',
+                }}
+              >
+                <Sparkles size={11} /> 5+ YEARS PRODUCTION ENGINEERING
+              </span>
+            </div>
+
+            <h2
+              style={{
+                fontFamily: 'var(--font-anthropic-serif)',
+                fontSize: 'clamp(28px, 4vw, 36px)',
+                fontWeight: 'var(--font-weight-bold)',
+                letterSpacing: 'var(--tracking-heading)',
+                color: 'var(--color-slate-dark)',
+                margin: '0 0 var(--spacing-8) 0',
+              }}
+            >
+              Work Experience
+            </h2>
+
+            <p
+              style={{
+                fontFamily: 'var(--font-anthropic-serif)',
+                fontSize: 'var(--text-body)',
+                color: 'var(--color-slate-medium)',
+                margin: '0 0 var(--spacing-16) 0',
+                maxWidth: '600px',
+                lineHeight: 1.5,
+              }}
+            >
+              Production track record architecting high-throughput distributed microservices, zero-downtime identity migrations, and real-time backend pipelines across global streaming and gaming platforms.
+            </p>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+              <div
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  fontFamily: 'var(--font-anthropic-mono)',
+                  fontSize: '12px',
+                  color: 'var(--color-slate-dark)',
+                }}
+              >
+                <span
+                  style={{
+                    width: '7px',
+                    height: '7px',
+                    borderRadius: '50%',
+                    backgroundColor: 'var(--color-clay)',
+                  }}
+                />
+                DAZN Systems Engineer
+              </div>
+              <div
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  fontFamily: 'var(--font-anthropic-mono)',
+                  fontSize: '12px',
+                  color: 'var(--color-slate-medium)',
+                }}
+              >
+                <span>📍 Hyderabad, India</span>
+              </div>
+            </div>
           </div>
 
-          <h2
-            style={{
-              fontFamily: 'var(--font-anthropic-serif)',
-              fontSize: '28px',
-              fontWeight: 'var(--font-weight-bold)',
-              letterSpacing: 'var(--tracking-heading)',
-              color: 'var(--color-slate-dark)',
-              margin: '0 0 var(--spacing-8) 0',
-            }}
-          >
-            Work Experience
-          </h2>
-
-          <p
-            style={{
-              fontFamily: 'var(--font-anthropic-serif)',
-              fontSize: 'var(--text-body)',
-              color: 'var(--color-slate-medium)',
-              margin: 0,
-              maxWidth: '720px',
-              lineHeight: 1.45,
-            }}
-          >
-            Production track record architecting high-throughput distributed microservices, zero-downtime identity migrations, and real-time backend pipelines across global streaming and gaming platforms.
-          </p>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <NawazProfileCard />
+          </div>
         </div>
 
         {/* Roles List */}
