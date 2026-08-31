@@ -152,16 +152,13 @@ export const GreetingScreen: React.FC<GreetingScreenProps> = ({ onComplete }) =>
         }
       }}
     >
-      {/* Background Pure Black Deep Stage with Soft Focus Light */}
+      {/* Pure Solid Black Canvas (No Gradients) */}
       <div
         style={{
           position: 'absolute',
           inset: 0,
-          background:
-            'radial-gradient(circle at 50% 50%, rgba(217, 119, 87, 0.14) 0%, rgba(0, 0, 0, 0.95) 55%, #000000 100%)',
+          backgroundColor: '#000000',
           pointerEvents: 'none',
-          transition: 'opacity 0.6s ease',
-          opacity: isNetflixZooming ? 0.3 : 1,
         }}
       />
 
@@ -329,9 +326,9 @@ export const GreetingScreen: React.FC<GreetingScreenProps> = ({ onComplete }) =>
                 width: '320px',
                 padding: '32px 24px',
                 borderRadius: '24px',
-                backgroundColor: 'rgba(18, 18, 17, 0.95)',
+                backgroundColor: '#000000',
                 border: '1px solid rgba(255, 255, 255, 0.1)',
-                boxShadow: '0 24px 60px -12px rgba(0, 0, 0, 0.8), 0 0 40px rgba(217, 119, 87, 0.2)',
+                boxShadow: '0 24px 60px -12px rgba(0, 0, 0, 0.9)',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -421,14 +418,13 @@ export const GreetingScreen: React.FC<GreetingScreenProps> = ({ onComplete }) =>
                 </div>
               </div>
 
-              {/* Subtitle / Role */}
+              {/* Subtitle: Software Engineer @ DAZN */}
               <div
                 style={{
-                  marginTop: '12px',
+                  marginTop: '16px',
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
-                  gap: '4px',
                   textAlign: 'center',
                 }}
               >
@@ -436,26 +432,14 @@ export const GreetingScreen: React.FC<GreetingScreenProps> = ({ onComplete }) =>
                   style={{
                     margin: 0,
                     fontFamily: 'var(--font-anthropic-sans)',
-                    fontSize: '15px',
+                    fontSize: '16px',
                     fontWeight: 500,
                     color: '#faf9f5',
                     letterSpacing: '-0.01em',
                   }}
                 >
-                  software engineer @ DAZN
+                  Software Engineer @ DAZN
                 </p>
-                <span
-                  style={{
-                    fontFamily: 'var(--font-anthropic-mono)',
-                    fontSize: '11px',
-                    color: '#d97757',
-                    letterSpacing: '0.04em',
-                    textTransform: 'uppercase',
-                    fontWeight: 600,
-                  }}
-                >
-                  Backend & Systems Architecture
-                </span>
               </div>
             </div>
           </div>
