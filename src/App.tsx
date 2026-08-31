@@ -8,6 +8,7 @@ import { WorksGrid } from './components/sections/WorksGrid';
 import { ProvenanceSection } from './components/sections/ProvenanceSection';
 import { Footer } from './components/layout/Footer';
 import { ContactModal } from './components/ui/ContactModal';
+import { GreetingScreen } from './components/ui/GreetingScreen';
 import { CaseStudyDetail } from './pages/CaseStudyDetail';
 import { ArchitectureDeckSection } from './components/sections/ArchitectureDeckSection';
 import { SkillsSection } from './components/sections/SkillsSection';
@@ -182,6 +183,7 @@ export const App: React.FC = () => {
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <GreetingScreen />
       <SectionScrollSync />
       <SkipLink targetId="main-content" />
       <Navbar
