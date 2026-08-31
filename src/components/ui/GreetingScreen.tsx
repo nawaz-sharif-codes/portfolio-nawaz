@@ -9,15 +9,13 @@ interface GreetingItem {
 
 const GREETINGS: GreetingItem[] = [
   { text: 'Hello', lang: 'English', code: 'EN' },
-  { text: 'నమస్తే', lang: 'Telugu', code: 'TE' },
   { text: 'नमस्ते', lang: 'Hindi', code: 'HI' },
+  { text: 'నమస్తే', lang: 'Telugu', code: 'TE' },
   { text: 'Bonjour', lang: 'French', code: 'FR' },
   { text: 'Hola', lang: 'Spanish', code: 'ES' },
   { text: 'こんにちは', lang: 'Japanese', code: 'JA' },
   { text: 'مرحباً', lang: 'Arabic', code: 'AR' },
-  { text: 'Ciao', lang: 'Italian', code: 'IT' },
-  { text: 'Hallo', lang: 'German', code: 'DE' },
-  { text: 'Nawaz Sharif', lang: 'Systems & Backend Architecture', code: 'PROD', isName: true },
+  { text: 'Nawaz Sharif', lang: 'Software Engineer @ DAZN', code: 'DAZN', isName: true },
 ];
 
 interface GreetingScreenProps {
