@@ -98,8 +98,8 @@ export const GreetingScreen: React.FC<GreetingScreenProps> = ({ onComplete }) =>
 
     const isLastName = currentIndex === GREETINGS.length - 1;
     // Step timing: ~280ms for international greetings
-    // When reaching Nawaz Sharif name: pause for 650ms then trigger Netflix zoom
-    const duration = isLastName ? 700 : 280;
+    // When reaching Nawaz Sharif card: pause for 1000ms then trigger Netflix zoom
+    const duration = isLastName ? 1100 : 280;
 
     const timer = setTimeout(() => {
       if (isLastName) {
@@ -138,7 +138,7 @@ export const GreetingScreen: React.FC<GreetingScreenProps> = ({ onComplete }) =>
         justifyContent: 'center',
         overflow: 'hidden',
         cursor: 'pointer',
-        perspective: '1000px',
+        perspective: '1200px',
         transition: 'opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1)',
         opacity: isExiting ? 0 : 1,
         pointerEvents: isExiting ? 'none' : 'auto',
@@ -158,10 +158,10 @@ export const GreetingScreen: React.FC<GreetingScreenProps> = ({ onComplete }) =>
           position: 'absolute',
           inset: 0,
           background:
-            'radial-gradient(circle at 50% 50%, rgba(217, 119, 87, 0.12) 0%, rgba(0, 0, 0, 0.95) 55%, #000000 100%)',
+            'radial-gradient(circle at 50% 50%, rgba(217, 119, 87, 0.14) 0%, rgba(0, 0, 0, 0.95) 55%, #000000 100%)',
           pointerEvents: 'none',
           transition: 'opacity 0.6s ease',
-          opacity: isNetflixZooming ? 0.4 : 1,
+          opacity: isNetflixZooming ? 0.3 : 1,
         }}
       />
 
@@ -231,7 +231,7 @@ export const GreetingScreen: React.FC<GreetingScreenProps> = ({ onComplete }) =>
         </button>
       </div>
 
-      {/* Center Stage: Typographic Greeting Reveal */}
+      {/* Center Stage: Typographic Greeting OR Full Nawaz Signature Card */}
       <div
         style={{
           position: 'relative',
@@ -241,91 +241,225 @@ export const GreetingScreen: React.FC<GreetingScreenProps> = ({ onComplete }) =>
           justifyContent: 'center',
           textAlign: 'center',
           padding: '0 24px',
-          maxWidth: '1000px',
+          maxWidth: '900px',
           transformStyle: 'preserve-3d',
         }}
       >
-        {/* Animated Word Container */}
-        <div
-          key={currentIndex}
-          className={isNetflixZooming ? 'netflix-zoom-target' : ''}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: isLastName ? '14px' : '12px',
-            transformOrigin: 'center center',
-            animation: isNetflixZooming
-              ? 'netflixZoomIntoCamera 0.9s cubic-bezier(0.2, 0, 0.1, 1) forwards'
-              : isLastName
-              ? 'nameReveal 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards'
-              : 'wordSlideIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-          }}
-        >
-          <h1
+        {!isLastName ? (
+          /* Multilingual Text Greetings */
+          <>
+            <div
+              key={currentIndex}
+              style={{
+                display: 'flex',
+                alignItems: 'baseline',
+                justifyContent: 'center',
+                gap: '12px',
+                animation: 'wordSlideIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+              }}
+            >
+              <h1
+                style={{
+                  fontFamily: 'var(--font-anthropic-serif)',
+                  fontSize: 'clamp(46px, 8vw, 88px)',
+                  fontWeight: 400,
+                  letterSpacing: '-0.01em',
+                  lineHeight: 1.1,
+                  color: '#faf9f5',
+                  margin: 0,
+                  padding: 0,
+                  textRendering: 'optimizeLegibility',
+                }}
+              >
+                {currentGreeting.text}
+              </h1>
+
+              {/* Terracotta Clay Accent Dot */}
+              <span
+                style={{
+                  display: 'inline-block',
+                  width: '14px',
+                  height: '14px',
+                  borderRadius: '50%',
+                  backgroundColor: '#d97757',
+                  boxShadow: '0 0 16px rgba(217, 119, 87, 0.8)',
+                  transform: 'translateY(-2px)',
+                }}
+              />
+            </div>
+
+            {/* Subtitle / Language Metadata */}
+            <div
+              key={`sub-${currentIndex}`}
+              style={{
+                marginTop: '20px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                animation: 'metaFadeIn 0.25s ease-out forwards',
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: 'var(--font-anthropic-mono)',
+                  fontSize: '12px',
+                  letterSpacing: '0.06em',
+                  color: '#87867f',
+                }}
+              >
+                {currentGreeting.lang}
+              </span>
+            </div>
+          </>
+        ) : (
+          /* Final Step: Nawaz Signature Card with Netflix Zoom Motion */
+          <div
+            className="greeting-nawaz-card-wrapper"
             style={{
-              fontFamily: isLastName
-                ? 'var(--font-anthropic-display-sans)'
-                : 'var(--font-anthropic-serif)',
-              fontSize: isLastName
-                ? 'clamp(36px, 7vw, 76px)'
-                : 'clamp(46px, 8vw, 88px)',
-              fontWeight: isLastName ? 700 : 400,
-              letterSpacing: isLastName ? '0.04em' : '-0.01em',
-              textTransform: isLastName ? 'uppercase' : 'none',
-              lineHeight: 1.1,
-              color: '#faf9f5',
-              margin: 0,
-              padding: 0,
-              textRendering: 'optimizeLegibility',
-              whiteSpace: 'nowrap',
+              animation: isNetflixZooming
+                ? 'netflixCardZoom 0.9s cubic-bezier(0.2, 0, 0.1, 1) forwards'
+                : 'cardSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+              transformOrigin: 'center center',
+              transformStyle: 'preserve-3d',
             }}
           >
-            {currentGreeting.text}
-          </h1>
+            <div
+              style={{
+                position: 'relative',
+                width: '320px',
+                padding: '32px 24px',
+                borderRadius: '24px',
+                backgroundColor: 'rgba(18, 18, 17, 0.95)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                boxShadow: '0 24px 60px -12px rgba(0, 0, 0, 0.8), 0 0 40px rgba(217, 119, 87, 0.2)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              {/* Card Top: Arched NAWAZ SHARIF in Header Font */}
+              <div
+                style={{
+                  position: 'relative',
+                  width: '240px',
+                  height: '210px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                {/* SVG Arched Text "NAWAZ SHARIF" in Header Display Sans Font */}
+                <svg
+                  viewBox="0 0 300 240"
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    pointerEvents: 'none',
+                    overflow: 'visible',
+                    zIndex: 10,
+                  }}
+                >
+                  <defs>
+                    <path
+                      id="greeting-card-curve"
+                      d="M 30,140 A 120,120 0 0,1 270,140"
+                      fill="transparent"
+                    />
+                  </defs>
 
-          {/* Terracotta Clay Accent Dot */}
-          <span
-            style={{
-              display: 'inline-block',
-              width: isLastName ? '14px' : '14px',
-              height: isLastName ? '14px' : '14px',
-              borderRadius: '50%',
-              backgroundColor: '#d97757',
-              boxShadow: '0 0 18px rgba(217, 119, 87, 0.95)',
-              transform: isLastName ? 'translateY(-3px)' : 'translateY(-2px)',
-            }}
-          />
-        </div>
+                  <text
+                    fill="#faf9f5"
+                    style={{
+                      fontFamily: 'var(--font-anthropic-display-sans)',
+                      fontSize: '26px',
+                      fontWeight: 700,
+                      letterSpacing: '0.12em',
+                      textTransform: 'uppercase',
+                      textShadow: '0 2px 12px rgba(0, 0, 0, 0.9)',
+                    }}
+                  >
+                    <textPath
+                      href="#greeting-card-curve"
+                      startOffset="50%"
+                      textAnchor="middle"
+                    >
+                      NAWAZ SHARIF
+                    </textPath>
+                  </text>
+                </svg>
 
-        {/* Subtitle / Language Metadata */}
-        <div
-          key={`sub-${currentIndex}`}
-          style={{
-            marginTop: '22px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-            animation: isNetflixZooming
-              ? 'metaFadeOut 0.2s ease-in forwards'
-              : 'metaFadeIn 0.25s ease-out forwards',
-          }}
-        >
-          <span
-            style={{
-              fontFamily: isLastName
-                ? 'var(--font-anthropic-mono)'
-                : 'var(--font-anthropic-mono)',
-              fontSize: '13px',
-              letterSpacing: isLastName ? '0.08em' : '0.06em',
-              textTransform: isLastName ? 'uppercase' : 'none',
-              color: isLastName ? '#d97757' : '#87867f',
-              fontWeight: isLastName ? 600 : 400,
-            }}
-          >
-            {currentGreeting.lang}
-          </span>
-        </div>
+                {/* Terracotta / Coral Circle Badge */}
+                <div
+                  style={{
+                    position: 'relative',
+                    width: '140px',
+                    height: '140px',
+                    borderRadius: '50%',
+                    backgroundColor: '#d97757',
+                    boxShadow: '0 10px 30px rgba(217, 119, 87, 0.4)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    overflow: 'hidden',
+                    marginTop: '32px',
+                  }}
+                >
+                  <img
+                    src="/nawaz-headshot.jpg"
+                    alt="Nawaz Sharif"
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      objectPosition: 'center 20%',
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Subtitle / Role */}
+              <div
+                style={{
+                  marginTop: '12px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '4px',
+                  textAlign: 'center',
+                }}
+              >
+                <p
+                  style={{
+                    margin: 0,
+                    fontFamily: 'var(--font-anthropic-sans)',
+                    fontSize: '15px',
+                    fontWeight: 500,
+                    color: '#faf9f5',
+                    letterSpacing: '-0.01em',
+                  }}
+                >
+                  software engineer @ DAZN
+                </p>
+                <span
+                  style={{
+                    fontFamily: 'var(--font-anthropic-mono)',
+                    fontSize: '11px',
+                    color: '#d97757',
+                    letterSpacing: '0.04em',
+                    textTransform: 'uppercase',
+                    fontWeight: 600,
+                  }}
+                >
+                  Backend & Systems Architecture
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Bottom Progress Track */}
@@ -370,11 +504,11 @@ export const GreetingScreen: React.FC<GreetingScreenProps> = ({ onComplete }) =>
           }
         }
 
-        @keyframes nameReveal {
+        @keyframes cardSlideUp {
           0% {
             opacity: 0;
-            transform: translateY(24px) scale(0.95);
-            filter: blur(4px);
+            transform: translateY(32px) scale(0.92);
+            filter: blur(6px);
           }
           100% {
             opacity: 1;
@@ -383,30 +517,26 @@ export const GreetingScreen: React.FC<GreetingScreenProps> = ({ onComplete }) =>
           }
         }
 
-        @keyframes netflixZoomIntoCamera {
+        @keyframes netflixCardZoom {
           0% {
             transform: scale(1) translateZ(0);
             opacity: 1;
             filter: blur(0px);
-            letter-spacing: 0.04em;
           }
           25% {
-            transform: scale(1.15) translateZ(60px);
+            transform: scale(1.18) translateZ(80px);
             opacity: 1;
             filter: blur(0px);
-            letter-spacing: 0.06em;
           }
           65% {
-            transform: scale(6.5) translateZ(400px);
+            transform: scale(4.5) translateZ(450px);
             opacity: 0.85;
             filter: blur(4px);
-            letter-spacing: 0.18em;
           }
           100% {
-            transform: scale(36) translateZ(900px);
+            transform: scale(22) translateZ(950px);
             opacity: 0;
-            filter: blur(20px);
-            letter-spacing: 0.4em;
+            filter: blur(16px);
           }
         }
 
@@ -418,17 +548,6 @@ export const GreetingScreen: React.FC<GreetingScreenProps> = ({ onComplete }) =>
           100% {
             opacity: 1;
             transform: translateY(0);
-          }
-        }
-
-        @keyframes metaFadeOut {
-          0% {
-            opacity: 1;
-            transform: scale(1);
-          }
-          100% {
-            opacity: 0;
-            transform: scale(0.9);
           }
         }
 
