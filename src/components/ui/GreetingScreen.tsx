@@ -25,7 +25,6 @@ interface GreetingScreenProps {
 export const GreetingScreen: React.FC<GreetingScreenProps> = ({ onComplete }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isExiting, setIsExiting] = useState(false);
-  const [isNetflixZooming, setIsNetflixZooming] = useState(false);
   const [shouldRender, setShouldRender] = useState(() => {
     if (typeof window === 'undefined') return false;
     try {
@@ -41,12 +40,11 @@ export const GreetingScreen: React.FC<GreetingScreenProps> = ({ onComplete }) =>
     try {
       sessionStorage.setItem('hasSeenGreeting', 'true');
     } catch {}
-    setIsNetflixZooming(true);
     setIsExiting(true);
     setTimeout(() => {
       setShouldRender(false);
       onComplete?.();
-    }, 900);
+    }, 750);
   }, [onComplete]);
 
   useEffect(() => {
@@ -98,15 +96,12 @@ export const GreetingScreen: React.FC<GreetingScreenProps> = ({ onComplete }) =>
 
     const isLastName = currentIndex === GREETINGS.length - 1;
     // Step timing: ~280ms for international greetings
-    // When reaching Nawaz Sharif card: pause for 1000ms then trigger Netflix zoom
-    const duration = isLastName ? 1100 : 280;
+    // When reaching Nawaz Sharif card: display for 1400ms then smoothly lift curtain
+    const duration = isLastName ? 1400 : 280;
 
     const timer = setTimeout(() => {
       if (isLastName) {
-        setIsNetflixZooming(true);
-        setTimeout(() => {
-          completeGreeting();
-        }, 150);
+        completeGreeting();
       } else {
         setCurrentIndex((prev) => prev + 1);
       }
@@ -138,10 +133,9 @@ export const GreetingScreen: React.FC<GreetingScreenProps> = ({ onComplete }) =>
         justifyContent: 'center',
         overflow: 'hidden',
         cursor: 'pointer',
-        perspective: '1200px',
-        transition: 'opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1)',
-        opacity: isExiting ? 0 : 1,
-        pointerEvents: isExiting ? 'none' : 'auto',
+        transition: 'transform 0.75s cubic-bezier(0.76, 0, 0.24, 1), opacity 0.75s cubic-bezier(0.76, 0, 0.24, 1)',
+        transform: isExiting ? 'translateY(-100%)' : 'translateY(0)',
+        opacity: isExiting ? 0.98 : 1,
       }}
       onClick={() => {
         const urlParams = new URLSearchParams(window.location.search);
@@ -177,8 +171,6 @@ export const GreetingScreen: React.FC<GreetingScreenProps> = ({ onComplete }) =>
           color: '#87867f',
           letterSpacing: '0.08em',
           textTransform: 'uppercase',
-          transition: 'opacity 0.3s ease',
-          opacity: isNetflixZooming ? 0 : 1,
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -239,7 +231,6 @@ export const GreetingScreen: React.FC<GreetingScreenProps> = ({ onComplete }) =>
           textAlign: 'center',
           padding: '0 24px',
           maxWidth: '900px',
-          transformStyle: 'preserve-3d',
         }}
       >
         {!isLastName ? (
@@ -309,15 +300,11 @@ export const GreetingScreen: React.FC<GreetingScreenProps> = ({ onComplete }) =>
             </div>
           </>
         ) : (
-          /* Final Step: Nawaz Signature Card with Netflix Zoom Motion */
+          /* Final Step: Nawaz Signature Card */
           <div
             className="greeting-nawaz-card-wrapper"
             style={{
-              animation: isNetflixZooming
-                ? 'netflixCardZoom 0.9s cubic-bezier(0.2, 0, 0.1, 1) forwards'
-                : 'cardSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-              transformOrigin: 'center center',
-              transformStyle: 'preserve-3d',
+              animation: 'cardSlideUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards',
             }}
           >
             <div
@@ -327,7 +314,7 @@ export const GreetingScreen: React.FC<GreetingScreenProps> = ({ onComplete }) =>
                 padding: '32px 24px',
                 borderRadius: '24px',
                 backgroundColor: '#000000',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
+                border: '1px solid rgba(255, 255, 255, 0.12)',
                 boxShadow: '0 24px 60px -12px rgba(0, 0, 0, 0.9)',
                 display: 'flex',
                 flexDirection: 'column',
@@ -458,8 +445,6 @@ export const GreetingScreen: React.FC<GreetingScreenProps> = ({ onComplete }) =>
           backgroundColor: 'rgba(255, 255, 255, 0.1)',
           borderRadius: '2px',
           overflow: 'hidden',
-          transition: 'opacity 0.3s ease',
-          opacity: isNetflixZooming ? 0 : 1,
         }}
       >
         <div
@@ -491,36 +476,13 @@ export const GreetingScreen: React.FC<GreetingScreenProps> = ({ onComplete }) =>
         @keyframes cardSlideUp {
           0% {
             opacity: 0;
-            transform: translateY(32px) scale(0.92);
-            filter: blur(6px);
+            transform: translateY(24px) scale(0.96);
+            filter: blur(4px);
           }
           100% {
             opacity: 1;
             transform: translateY(0) scale(1);
             filter: blur(0);
-          }
-        }
-
-        @keyframes netflixCardZoom {
-          0% {
-            transform: scale(1) translateZ(0);
-            opacity: 1;
-            filter: blur(0px);
-          }
-          25% {
-            transform: scale(1.18) translateZ(80px);
-            opacity: 1;
-            filter: blur(0px);
-          }
-          65% {
-            transform: scale(4.5) translateZ(450px);
-            opacity: 0.85;
-            filter: blur(4px);
-          }
-          100% {
-            transform: scale(22) translateZ(950px);
-            opacity: 0;
-            filter: blur(16px);
           }
         }
 
