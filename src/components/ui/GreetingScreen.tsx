@@ -1,0 +1,513 @@
+import React, { useState, useEffect, useCallback } from 'react';
+
+interface GreetingItem {
+  text: string;
+  lang: string;
+  code: string;
+  isName?: boolean;
+}
+
+const GREETINGS: GreetingItem[] = [
+  { text: 'Hello', lang: 'English', code: 'EN' },
+  { text: 'नमस्ते', lang: 'Hindi', code: 'HI' },
+  { text: 'నమస్తే', lang: 'Telugu', code: 'TE' },
+  { text: 'Bonjour', lang: 'French', code: 'FR' },
+  { text: 'Hola', lang: 'Spanish', code: 'ES' },
+  { text: 'こんにちは', lang: 'Japanese', code: 'JA' },
+  { text: 'مرحباً', lang: 'Arabic', code: 'AR' },
+  { text: 'NAWAZ SHARIF', lang: 'Software Engineer @ DAZN', code: 'DAZN', isName: true },
+];
+
+interface GreetingScreenProps {
+  onComplete?: () => void;
+}
+
+export const GreetingScreen: React.FC<GreetingScreenProps> = ({ onComplete }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isExiting, setIsExiting] = useState(false);
+  const [shouldRender, setShouldRender] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has('greet')) return true;
+      return sessionStorage.getItem('hasSeenGreeting') !== 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  const completeGreeting = useCallback(() => {
+    try {
+      sessionStorage.setItem('hasSeenGreeting', 'true');
+    } catch {}
+    setIsExiting(true);
+    setTimeout(() => {
+      setShouldRender(false);
+      onComplete?.();
+    }, 750);
+  }, [onComplete]);
+
+  useEffect(() => {
+    // Check if greeting has already run in this window session
+    const urlParams = new URLSearchParams(window.location.search);
+    const forceGreeting = urlParams.has('greet');
+    
+    let hasSeen = false;
+    try {
+      hasSeen = sessionStorage.getItem('hasSeenGreeting') === 'true';
+    } catch {}
+
+    if (hasSeen && !forceGreeting) {
+      setShouldRender(false);
+      return;
+    }
+
+    setShouldRender(true);
+
+    // Keyboard listener: Press Escape to skip, ArrowRight to step during preview
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const isPreview = urlParams.get('greet') === 'preview';
+
+      if (e.key === 'Escape') {
+        completeGreeting();
+      } else if (isPreview && (e.key === 'ArrowRight' || e.key === ' ')) {
+        e.preventDefault();
+        setCurrentIndex((prev) => (prev + 1) % GREETINGS.length);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [completeGreeting]);
+
+  // Stepping through the greeting languages
+  useEffect(() => {
+    if (!shouldRender || isExiting) return;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const isPreview = urlParams.get('greet') === 'preview';
+    if (isPreview) {
+      setShouldRender(true);
+      return;
+    }
+
+    const isLastName = currentIndex === GREETINGS.length - 1;
+    // Step timing: ~280ms for international greetings
+    // When reaching Nawaz Sharif card: display for 1400ms then smoothly lift curtain
+    const duration = isLastName ? 1400 : 280;
+
+    const timer = setTimeout(() => {
+      if (isLastName) {
+        completeGreeting();
+      } else {
+        setCurrentIndex((prev) => prev + 1);
+      }
+    }, duration);
+
+    return () => clearTimeout(timer);
+  }, [currentIndex, shouldRender, isExiting, completeGreeting]);
+
+  if (!shouldRender) return null;
+
+  const currentGreeting = GREETINGS[currentIndex];
+  const isLastName = currentGreeting.isName;
+
+  return (
+    <div
+      id="editorial-greeting-curtain"
+      role="dialog"
+      aria-label="Welcome greeting sequence"
+      aria-modal="true"
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 99999,
+        backgroundColor: '#000000',
+        color: '#faf9f5',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden',
+        cursor: 'pointer',
+        transition: 'transform 0.75s cubic-bezier(0.76, 0, 0.24, 1), opacity 0.75s cubic-bezier(0.76, 0, 0.24, 1)',
+        transform: isExiting ? 'translateY(-100%)' : 'translateY(0)',
+        opacity: isExiting ? 0.98 : 1,
+      }}
+      onClick={() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('greet') === 'preview') {
+          setCurrentIndex((prev) => (prev + 1) % GREETINGS.length);
+        } else {
+          completeGreeting();
+        }
+      }}
+    >
+      {/* Pure Solid Black Canvas (No Gradients) */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundColor: '#000000',
+          pointerEvents: 'none',
+        }}
+      />
+
+      {/* Top Bar: Editorial Index & Skip Action */}
+      <div
+        style={{
+          position: 'absolute',
+          top: '32px',
+          left: '32px',
+          right: '32px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          fontFamily: 'var(--font-anthropic-mono)',
+          fontSize: '11px',
+          color: '#87867f',
+          letterSpacing: '0.08em',
+          textTransform: 'uppercase',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span
+            style={{
+              width: '6px',
+              height: '6px',
+              borderRadius: '50%',
+              backgroundColor: '#d97757',
+              boxShadow: '0 0 8px rgba(217, 119, 87, 0.8)',
+              animation: 'beaconPulse 1.6s infinite ease-in-out',
+            }}
+          />
+          <span style={{ color: '#cccbc8', fontWeight: 600 }}>SYSTEM BOOT</span>
+          <span>/</span>
+          <span>{currentGreeting.code}</span>
+        </div>
+
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            completeGreeting();
+          }}
+          aria-label="Skip introduction"
+          style={{
+            background: 'rgba(255, 255, 255, 0.04)',
+            border: '1px solid rgba(255, 255, 255, 0.12)',
+            color: '#faf9f5',
+            fontFamily: 'var(--font-anthropic-mono)',
+            fontSize: '10.5px',
+            padding: '6px 12px',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            letterSpacing: '0.06em',
+            transition: 'background-color 0.2s ease, border-color 0.2s ease',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(217, 119, 87, 0.18)';
+            e.currentTarget.style.borderColor = 'rgba(217, 119, 87, 0.5)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.04)';
+            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.12)';
+          }}
+        >
+          SKIP [ESC]
+        </button>
+      </div>
+
+      {/* Center Stage: Typographic Greeting OR Full Nawaz Signature Card */}
+      <div
+        style={{
+          position: 'relative',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          textAlign: 'center',
+          padding: '0 24px',
+          maxWidth: '900px',
+        }}
+      >
+        {!isLastName ? (
+          /* Multilingual Text Greetings */
+          <>
+            <div
+              key={currentIndex}
+              style={{
+                display: 'flex',
+                alignItems: 'baseline',
+                justifyContent: 'center',
+                gap: '12px',
+                animation: 'wordSlideIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+              }}
+            >
+              <h1
+                style={{
+                  fontFamily: 'var(--font-anthropic-serif)',
+                  fontSize: 'clamp(46px, 8vw, 88px)',
+                  fontWeight: 400,
+                  letterSpacing: '-0.01em',
+                  lineHeight: 1.1,
+                  color: '#faf9f5',
+                  margin: 0,
+                  padding: 0,
+                  textRendering: 'optimizeLegibility',
+                }}
+              >
+                {currentGreeting.text}
+              </h1>
+
+              {/* Terracotta Clay Accent Dot */}
+              <span
+                style={{
+                  display: 'inline-block',
+                  width: '14px',
+                  height: '14px',
+                  borderRadius: '50%',
+                  backgroundColor: '#d97757',
+                  boxShadow: '0 0 16px rgba(217, 119, 87, 0.8)',
+                  transform: 'translateY(-2px)',
+                }}
+              />
+            </div>
+
+            {/* Subtitle / Language Metadata */}
+            <div
+              key={`sub-${currentIndex}`}
+              style={{
+                marginTop: '20px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                animation: 'metaFadeIn 0.25s ease-out forwards',
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: 'var(--font-anthropic-mono)',
+                  fontSize: '12px',
+                  letterSpacing: '0.06em',
+                  color: '#87867f',
+                }}
+              >
+                {currentGreeting.lang}
+              </span>
+            </div>
+          </>
+        ) : (
+          /* Final Step: Nawaz Signature Card */
+          <div
+            className="greeting-nawaz-card-wrapper"
+            style={{
+              animation: 'cardSlideUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+            }}
+          >
+            <div
+              style={{
+                position: 'relative',
+                width: '320px',
+                padding: '32px 24px',
+                borderRadius: '24px',
+                backgroundColor: '#000000',
+                border: '1px solid rgba(255, 255, 255, 0.12)',
+                boxShadow: '0 24px 60px -12px rgba(0, 0, 0, 0.9)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              {/* Card Top: Arched NAWAZ SHARIF in Header Font */}
+              <div
+                style={{
+                  position: 'relative',
+                  width: '240px',
+                  height: '210px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                {/* SVG Arched Text "NAWAZ SHARIF" in Header Display Sans Font */}
+                <svg
+                  viewBox="0 0 300 240"
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    pointerEvents: 'none',
+                    overflow: 'visible',
+                    zIndex: 10,
+                  }}
+                >
+                  <defs>
+                    <path
+                      id="greeting-card-curve"
+                      d="M 30,140 A 120,120 0 0,1 270,140"
+                      fill="transparent"
+                    />
+                  </defs>
+
+                  <text
+                    fill="#faf9f5"
+                    style={{
+                      fontFamily: 'var(--font-anthropic-display-sans)',
+                      fontSize: '26px',
+                      fontWeight: 700,
+                      letterSpacing: '0.12em',
+                      textTransform: 'uppercase',
+                      textShadow: '0 2px 12px rgba(0, 0, 0, 0.9)',
+                    }}
+                  >
+                    <textPath
+                      href="#greeting-card-curve"
+                      startOffset="50%"
+                      textAnchor="middle"
+                    >
+                      NAWAZ SHARIF
+                    </textPath>
+                  </text>
+                </svg>
+
+                {/* Terracotta / Coral Circle Badge */}
+                <div
+                  style={{
+                    position: 'relative',
+                    width: '140px',
+                    height: '140px',
+                    borderRadius: '50%',
+                    backgroundColor: '#d97757',
+                    boxShadow: '0 10px 30px rgba(217, 119, 87, 0.4)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    overflow: 'hidden',
+                    marginTop: '32px',
+                  }}
+                >
+                  <img
+                    src="/nawaz-headshot.jpg"
+                    alt="Nawaz Sharif"
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      objectPosition: 'center 20%',
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Subtitle: Software Engineer @ DAZN */}
+              <div
+                style={{
+                  marginTop: '16px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  textAlign: 'center',
+                }}
+              >
+                <p
+                  style={{
+                    margin: 0,
+                    fontFamily: 'var(--font-anthropic-sans)',
+                    fontSize: '16px',
+                    fontWeight: 500,
+                    color: '#faf9f5',
+                    letterSpacing: '-0.01em',
+                  }}
+                >
+                  Software Engineer @ DAZN
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Bottom Progress Track */}
+      <div
+        style={{
+          position: 'absolute',
+          bottom: '36px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: '180px',
+          height: '2px',
+          backgroundColor: 'rgba(255, 255, 255, 0.1)',
+          borderRadius: '2px',
+          overflow: 'hidden',
+        }}
+      >
+        <div
+          style={{
+            height: '100%',
+            backgroundColor: '#d97757',
+            width: `${((currentIndex + 1) / GREETINGS.length) * 100}%`,
+            transition: 'width 0.22s ease-out',
+            boxShadow: '0 0 8px #d97757',
+          }}
+        />
+      </div>
+
+      {/* Embedded Motion Styles */}
+      <style>{`
+        @keyframes wordSlideIn {
+          0% {
+            opacity: 0;
+            transform: translateY(22px) scale(0.96);
+            filter: blur(4px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            filter: blur(0);
+          }
+        }
+
+        @keyframes cardSlideUp {
+          0% {
+            opacity: 0;
+            transform: translateY(24px) scale(0.96);
+            filter: blur(4px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            filter: blur(0);
+          }
+        }
+
+        @keyframes metaFadeIn {
+          0% {
+            opacity: 0;
+            transform: translateY(6px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes beaconPulse {
+          0%, 100% {
+            opacity: 1;
+            transform: scale(1);
+          }
+          50% {
+            opacity: 0.4;
+            transform: scale(0.85);
+          }
+        }
+      `}</style>
+    </div>
+  );
+};
